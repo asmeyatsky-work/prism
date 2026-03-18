@@ -6,252 +6,249 @@
 <title>PRISM — Unified Commerce Intelligence Platform</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap');
-
   :root {
-    --bg: #06080c;
-    --surface: #0d1117;
-    --surface-2: #161b22;
-    --surface-3: #1c2333;
-    --border: #1e2a3a;
-    --border-active: #2d4a6f;
-    --text: #e2e8f0;
-    --text-muted: #64748b;
-    --text-dim: #475569;
-    --gold: #d4a853;
-    --gold-dim: #8a7340;
-    --green: #34d399;
-    --green-dim: #065f46;
-    --blue: #60a5fa;
-    --blue-dim: #1e3a5f;
-    --purple: #a78bfa;
-    --purple-dim: #4c1d95;
-    --orange: #fb923c;
-    --red: #f87171;
-    --cyan: #22d3ee;
+    --bg:#06080c;--surface:#0d1117;--surface-2:#161b22;--surface-3:#1c2333;
+    --border:#1e2a3a;--border-active:#2d4a6f;
+    --text:#e2e8f0;--text-muted:#64748b;--text-dim:#475569;
+    --gold:#d4a853;--gold-dim:#8a7340;--green:#34d399;--green-dim:#065f46;
+    --blue:#60a5fa;--blue-dim:#1e3a5f;--purple:#a78bfa;--purple-dim:#4c1d95;
+    --orange:#fb923c;--red:#f87171;--cyan:#22d3ee;
   }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-weight:300;overflow-x:hidden;}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); font-weight:300; overflow-x:hidden; }
+  /* ── HEADER ── */
+  header{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 1.5rem;border-bottom:1px solid var(--border);background:var(--surface);position:relative;z-index:100;}
+  .logo-area{display:flex;align-items:center;gap:0.8rem;}
+  .logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;letter-spacing:0.25em;color:var(--gold);}
+  .logo-sub{font-size:0.5rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);}
+  .header-metrics{display:flex;gap:1.2rem;align-items:center;}
+  .hm{text-align:center;}
+  .hm .hm-val{font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--gold);font-weight:500;}
+  .hm .hm-label{font-size:0.45rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);}
+  .header-right{display:flex;align-items:center;gap:1rem;}
+  .status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:0.3rem;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  .status-text{font-size:0.6rem;letter-spacing:0.08em;color:var(--text-muted);}
+  .tenant-pill{background:var(--surface-2);border:1px solid var(--border);color:var(--gold);padding:0.3rem 0.8rem;font-size:0.6rem;letter-spacing:0.1em;cursor:pointer;font-family:'Inter',sans-serif;}
+  .sound-toggle{background:none;border:1px solid var(--border);color:var(--text-dim);padding:0.2rem 0.5rem;font-size:0.7rem;cursor:pointer;border-radius:2px;}
+  .sound-toggle.on{color:var(--gold);border-color:var(--gold-dim);}
 
-  /* HEADER */
-  header {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0.8rem 1.5rem;
-    border-bottom:1px solid var(--border);
-    background:var(--surface);
-  }
-  .logo-area { display:flex; align-items:center; gap:1rem; }
-  .logo { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:300; letter-spacing:0.25em; color:var(--gold); }
-  .logo-sub { font-size:0.55rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); }
-  .header-status { display:flex; align-items:center; gap:1.5rem; }
-  .status-dot { width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block; margin-right:0.3rem; animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .status-text { font-size:0.65rem; letter-spacing:0.08em; color:var(--text-muted); }
-  .tenant-pill {
-    background:var(--surface-2); border:1px solid var(--border); color:var(--gold);
-    padding:0.3rem 0.8rem; font-size:0.65rem; letter-spacing:0.1em; cursor:pointer;
-    font-family:'Inter',sans-serif;
-  }
+  /* ── LAYOUT ── */
+  .app{display:grid;grid-template-columns:1fr 340px;grid-template-rows:auto auto 1fr auto;height:calc(100vh - 44px);}
 
-  /* LAYOUT */
-  .app { display:grid; grid-template-columns:1fr 380px; grid-template-rows:auto 1fr; height:calc(100vh - 52px); }
+  /* ── CONTEXT BAR ── */
+  .context-bar{grid-column:1/-1;display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--surface);}
+  .ctx{flex:1;padding:0.5rem 0.5rem;text-align:center;border-right:1px solid var(--border);cursor:pointer;transition:all 0.3s;position:relative;}
+  .ctx:last-child{border-right:none;}
+  .ctx .ctx-name{font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);transition:color 0.3s;}
+  .ctx .ctx-icon{font-size:0.8rem;margin-bottom:0.1rem;opacity:0.3;transition:opacity 0.3s;}
+  .ctx.running{background:var(--surface-2);}
+  .ctx.running .ctx-name{color:var(--green);}
+  .ctx.running .ctx-icon{opacity:1;}
+  .ctx.running::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--green);animation:scanline 1s ease-in-out infinite;}
+  @keyframes scanline{0%{opacity:0.3}50%{opacity:1}100%{opacity:0.3}}
+  .ctx.done .ctx-name{color:var(--green);}
+  .ctx.done .ctx-icon{opacity:0.7;}
 
-  /* TOP BAR - Context indicators */
-  .context-bar {
-    grid-column:1/-1; display:flex; gap:0; border-bottom:1px solid var(--border); background:var(--surface);
-  }
-  .ctx {
-    flex:1; padding:0.6rem 1rem; text-align:center; border-right:1px solid var(--border);
-    cursor:pointer; transition:all 0.3s; position:relative;
-  }
-  .ctx:last-child { border-right:none; }
-  .ctx .ctx-name { font-size:0.55rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); transition:color 0.3s; }
-  .ctx .ctx-icon { font-size:0.9rem; margin-bottom:0.15rem; opacity:0.4; transition:opacity 0.3s; }
-  .ctx.active .ctx-icon { opacity:1; }
-  .ctx.active .ctx-name { color:var(--gold); }
-  .ctx.running { background:var(--surface-2); }
-  .ctx.running .ctx-name { color:var(--green); }
-  .ctx.running::after {
-    content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
-    background:var(--green); animation:scanline 1s ease-in-out infinite;
-  }
-  @keyframes scanline { 0%{opacity:0.3} 50%{opacity:1} 100%{opacity:0.3} }
-  .ctx.done .ctx-name { color:var(--green); }
-  .ctx.done .ctx-icon { opacity:0.8; }
+  /* ── ARCHITECTURE GRAPH ── */
+  .arch-graph{grid-column:1/-1;height:180px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface);display:none;}
+  .arch-graph.visible{display:block;}
+  .arch-graph canvas{width:100%;height:100%;}
 
-  /* MAIN PANEL */
-  .main-panel { overflow-y:auto; padding:1.5rem; }
+  /* ── MAIN PANEL ── */
+  .main-panel{overflow-y:auto;padding:1.2rem;}
 
-  /* RIGHT PANEL - Event Stream */
-  .event-panel {
-    background:var(--surface); border-left:1px solid var(--border);
-    display:flex; flex-direction:column; overflow:hidden;
-  }
-  .event-header {
-    padding:0.8rem 1rem; border-bottom:1px solid var(--border);
-    font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted);
-    display:flex; justify-content:space-between; align-items:center;
-  }
-  .event-stream { flex:1; overflow-y:auto; padding:0.5rem; font-family:'JetBrains Mono',monospace; font-size:0.7rem; }
+  /* ── EVENT PANEL ── */
+  .event-panel{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;grid-row:2/5;}
+  .event-header{padding:0.6rem 0.8rem;border-bottom:1px solid var(--border);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);display:flex;justify-content:space-between;}
+  .event-stream{flex:1;overflow-y:auto;padding:0.4rem;font-family:'JetBrains Mono',monospace;font-size:0.65rem;}
+  .event{padding:0.3rem 0.5rem;margin-bottom:0.2rem;border-left:2px solid var(--border);animation:fadeIn 0.3s ease-out;line-height:1.4;}
+  @keyframes fadeIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+  .event .ev-time{color:var(--text-dim);}
+  .event .ev-ctx{font-weight:500;}
+  .event.ev-mcp{border-left-color:var(--purple);}.event.ev-mcp .ev-ctx{color:var(--purple);}
+  .event.ev-domain{border-left-color:var(--blue);}.event.ev-domain .ev-ctx{color:var(--blue);}
+  .event.ev-ai{border-left-color:var(--gold);}.event.ev-ai .ev-ctx{color:var(--gold);}
+  .event.ev-success{border-left-color:var(--green);}.event.ev-success .ev-ctx{color:var(--green);}
+  .event.ev-payment{border-left-color:var(--orange);}.event.ev-payment .ev-ctx{color:var(--orange);}
 
-  .event {
-    padding:0.4rem 0.6rem; margin-bottom:0.3rem; border-left:2px solid var(--border);
-    animation:fadeIn 0.3s ease-out; line-height:1.5;
-  }
-  @keyframes fadeIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
-  .event .ev-time { color:var(--text-dim); }
-  .event .ev-ctx { font-weight:500; }
-  .event.ev-mcp { border-left-color:var(--purple); }
-  .event.ev-mcp .ev-ctx { color:var(--purple); }
-  .event.ev-domain { border-left-color:var(--blue); }
-  .event.ev-domain .ev-ctx { color:var(--blue); }
-  .event.ev-ai { border-left-color:var(--gold); }
-  .event.ev-ai .ev-ctx { color:var(--gold); }
-  .event.ev-success { border-left-color:var(--green); }
-  .event.ev-success .ev-ctx { color:var(--green); }
-  .event.ev-payment { border-left-color:var(--orange); }
-  .event.ev-payment .ev-ctx { color:var(--orange); }
+  /* ── JOURNEY TIMELINE ── */
+  .journey-bar{grid-column:1/2;border-top:1px solid var(--border);background:var(--surface);padding:0.4rem 1rem;display:none;align-items:center;gap:0;}
+  .journey-bar.visible{display:flex;}
+  .jstep{flex:1;text-align:center;position:relative;padding:0.3rem 0;}
+  .jstep .js-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg);display:inline-block;transition:all 0.4s;}
+  .jstep.active .js-dot{border-color:var(--gold);background:var(--gold);box-shadow:0 0 8px rgba(212,168,83,0.4);}
+  .jstep.done .js-dot{border-color:var(--green);background:var(--green);}
+  .jstep .js-label{font-size:0.45rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-top:0.15rem;}
+  .jstep.active .js-label{color:var(--gold);}
+  .jstep.done .js-label{color:var(--green);}
+  .jstep::after{content:'';position:absolute;top:50%;left:50%;right:-50%;height:1px;background:var(--border);z-index:0;transform:translateY(-3px);}
+  .jstep:last-child::after{display:none;}
+  .jstep.done::after{background:var(--green-dim);}
 
-  /* HERO / DEMO LAUNCHER */
-  .hero {
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    height:100%; text-align:center; padding:2rem;
-  }
-  .hero h1 {
-    font-family:'Cormorant Garamond',serif; font-size:3rem; font-weight:300;
-    letter-spacing:0.05em; margin-bottom:0.5rem; color:var(--text);
-  }
-  .hero h1 em { color:var(--gold); font-style:normal; }
-  .hero .hero-sub {
-    font-size:0.85rem; color:var(--text-muted); max-width:600px; margin-bottom:2.5rem; line-height:1.7;
-  }
-  .run-demo-btn {
-    background:transparent; border:1px solid var(--gold); color:var(--gold);
-    padding:1rem 3rem; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase;
-    cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.4s; position:relative; overflow:hidden;
-  }
-  .run-demo-btn:hover { background:var(--gold); color:var(--bg); }
-  .run-demo-btn.running {
-    border-color:var(--green); color:var(--green); pointer-events:none;
-  }
-  .run-demo-btn.running::after {
-    content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
-    background:linear-gradient(90deg,transparent,rgba(52,211,153,0.1),transparent);
-    animation:shimmer 1.5s infinite;
-  }
-  @keyframes shimmer { to{left:100%} }
+  /* ── HERO ── */
+  .hero{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:2rem;}
+  .hero h1{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;letter-spacing:0.04em;margin-bottom:0.5rem;}
+  .hero h1 em{color:var(--gold);font-style:normal;}
+  .hero .hero-sub{font-size:0.8rem;color:var(--text-muted);max-width:560px;margin-bottom:2rem;line-height:1.7;}
+  .run-demo-btn{background:transparent;border:1px solid var(--gold);color:var(--gold);padding:0.8rem 2.5rem;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.4s;position:relative;overflow:hidden;}
+  .run-demo-btn:hover{background:var(--gold);color:var(--bg);}
+  .run-demo-btn.running{border-color:var(--green);color:var(--green);pointer-events:none;}
+  .run-demo-btn.running::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(52,211,153,0.1),transparent);animation:shimmer 1.5s infinite;}
+  @keyframes shimmer{to{left:100%}}
+  .demo-progress{margin-top:1.2rem;width:380px;max-width:90%;}
+  .progress-bar{height:2px;background:var(--border);overflow:hidden;margin-bottom:0.4rem;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--green));width:0%;transition:width 0.6s;}
+  .progress-text{font-size:0.65rem;color:var(--text-muted);}
 
-  .demo-progress { margin-top:1.5rem; width:400px; max-width:90%; }
-  .progress-bar { height:2px; background:var(--border); border-radius:1px; overflow:hidden; margin-bottom:0.5rem; }
-  .progress-fill { height:100%; background:var(--gold); width:0%; transition:width 0.5s; }
-  .progress-text { font-size:0.7rem; color:var(--text-muted); }
+  /* ── STAGE CARDS ── */
+  .stage-display{display:none;}
+  .stage-display.visible{display:block;}
+  .stage-card{background:var(--surface-2);border:1px solid var(--border);padding:1.2rem;margin-bottom:0.8rem;animation:slideUp 0.4s ease-out;}
+  @keyframes slideUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+  .sc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;}
+  .sc-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400;}
+  .sc-badge{font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.15rem 0.5rem;border:1px solid;}
+  .sc-badge.done{border-color:var(--gold);color:var(--gold);}
+  .sc-body{font-size:0.75rem;color:var(--text-muted);line-height:1.7;}
+  .sc-body .highlight{color:var(--text);font-weight:400;}
+  .sc-body .val{color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.7rem;}
+  .sc-body .success{color:var(--green);}
 
-  /* STAGE DISPLAY */
-  .stage-display { display:none; }
-  .stage-display.visible { display:block; }
+  .sc-data-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-top:0.6rem;}
+  .sc-data-item{background:var(--surface-3);padding:0.4rem 0.6rem;}
+  .sc-data-item .label{font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
+  .sc-data-item .value{font-size:0.8rem;margin-top:0.1rem;}
 
-  .stage-card {
-    background:var(--surface-2); border:1px solid var(--border); padding:1.5rem; margin-bottom:1rem;
-    animation:slideUp 0.4s ease-out;
-  }
-  @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  /* ── PRODUCT CARDS with gradient placeholders ── */
+  .product-row{display:flex;gap:0.6rem;overflow-x:auto;padding:0.4rem 0;margin-top:0.6rem;}
+  .mini-product{background:var(--surface-3);border:1px solid var(--border);min-width:180px;flex-shrink:0;overflow:hidden;}
+  .mp-image{height:80px;position:relative;overflow:hidden;}
+  .mp-image .mp-gradient{width:100%;height:100%;opacity:0.7;}
+  .mp-image .mp-silhouette{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.8rem;opacity:0.15;color:#fff;}
+  .mp-info{padding:0.6rem;}
+  .mp-brand{font-size:0.5rem;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;}
+  .mp-name{font-family:'Cormorant Garamond',serif;font-size:0.85rem;margin:0.15rem 0;line-height:1.2;}
+  .mp-price{color:var(--gold);font-size:0.8rem;}
+  .mp-meta{font-size:0.55rem;color:var(--text-dim);margin-top:0.2rem;}
 
-  .stage-card .sc-header {
-    display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;
-  }
-  .stage-card .sc-title {
-    font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:400;
-  }
-  .stage-card .sc-badge {
-    font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase;
-    padding:0.2rem 0.6rem; border:1px solid;
-  }
-  .sc-badge.running { border-color:var(--green); color:var(--green); }
-  .sc-badge.done { border-color:var(--gold); color:var(--gold); }
+  /* ── BEFORE / AFTER ENRICHMENT ── */
+  .enrich-split{display:grid;grid-template-columns:1fr auto 1fr;gap:0;margin-top:0.6rem;border:1px solid var(--border);}
+  .enrich-col{padding:0.8rem;}
+  .enrich-col.before{background:var(--surface-3);}
+  .enrich-col.after{background:var(--surface-2);}
+  .enrich-divider{width:1px;background:var(--border);position:relative;}
+  .enrich-divider::after{content:'→';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface);color:var(--gold);padding:0.2rem;font-size:0.7rem;}
+  .enrich-label{font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;}
+  .enrich-col.before .enrich-label{color:var(--text-dim);}
+  .enrich-col.after .enrich-label{color:var(--green);}
+  .enrich-row{font-size:0.7rem;padding:0.15rem 0;display:flex;justify-content:space-between;}
+  .enrich-row .ek{color:var(--text-dim);}
+  .enrich-row .ev{color:var(--text-muted);}
+  .enrich-col.after .enrich-row .ev{color:var(--text);}
+  .enrich-row.new{animation:highlightNew 1s ease-out;}
+  @keyframes highlightNew{from{background:rgba(52,211,153,0.15)}to{background:transparent}}
 
-  .stage-card .sc-body { font-size:0.8rem; color:var(--text-muted); line-height:1.7; }
-  .stage-card .sc-body .highlight { color:var(--text); font-weight:400; }
-  .stage-card .sc-body .val { color:var(--gold); font-family:'JetBrains Mono',monospace; font-size:0.75rem; }
-  .stage-card .sc-body .success { color:var(--green); }
+  /* ── DAG VISUALIZATION ── */
+  .dag-vis{margin:0.6rem 0;padding:0.6rem;background:var(--surface-3);border:1px solid var(--border);display:flex;align-items:center;gap:0.4rem;overflow-x:auto;}
+  .dag-node{padding:0.3rem 0.6rem;border:1px solid var(--border);font-size:0.6rem;font-family:'JetBrains Mono',monospace;white-space:nowrap;transition:all 0.4s;}
+  .dag-node.active{border-color:var(--green);color:var(--green);box-shadow:0 0 6px rgba(52,211,153,0.2);}
+  .dag-node.done{border-color:var(--gold);color:var(--gold);}
+  .dag-arrow{color:var(--text-dim);font-size:0.7rem;}
+  .dag-parallel{display:flex;flex-direction:column;gap:0.2rem;border:1px dashed var(--border);padding:0.3rem;position:relative;}
+  .dag-parallel::before{content:'parallel';position:absolute;top:-0.5rem;left:0.3rem;font-size:0.4rem;color:var(--text-dim);letter-spacing:0.08em;text-transform:uppercase;background:var(--surface-3);padding:0 0.2rem;}
 
-  .sc-data-grid {
-    display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.8rem;
-  }
-  .sc-data-item { background:var(--surface-3); padding:0.5rem 0.7rem; }
-  .sc-data-item .label { font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); }
-  .sc-data-item .value { font-size:0.85rem; margin-top:0.15rem; }
+  /* ── FX RATE TABLE ── */
+  .fx-table{margin:0.6rem 0;border-collapse:collapse;width:100%;font-size:0.7rem;}
+  .fx-table th{text-align:left;font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);padding:0.3rem 0.5rem;border-bottom:1px solid var(--border);font-weight:400;}
+  .fx-table td{padding:0.3rem 0.5rem;border-bottom:1px solid var(--border);}
+  .fx-table tr.best td{color:var(--green);}
+  .fx-table .fx-bar{height:3px;background:var(--border);border-radius:1px;overflow:hidden;margin-top:0.2rem;}
+  .fx-table .fx-bar .fx-fill{height:100%;background:var(--gold);transition:width 1s;}
 
-  /* PRODUCT CARDS INLINE */
-  .product-row {
-    display:flex; gap:0.8rem; overflow-x:auto; padding:0.5rem 0; margin-top:0.8rem;
-  }
-  .mini-product {
-    background:var(--surface-3); border:1px solid var(--border); padding:0.8rem;
-    min-width:200px; flex-shrink:0;
-  }
-  .mini-product .mp-brand { font-size:0.55rem; color:var(--gold); letter-spacing:0.1em; text-transform:uppercase; }
-  .mini-product .mp-name { font-family:'Cormorant Garamond',serif; font-size:0.95rem; margin:0.2rem 0; line-height:1.3; }
-  .mini-product .mp-price { color:var(--gold); font-size:0.85rem; }
-  .mini-product .mp-meta { font-size:0.6rem; color:var(--text-dim); margin-top:0.3rem; }
+  /* ── DIFF VIEW ── */
+  .diff-view{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:0.6rem;font-family:'JetBrains Mono',monospace;font-size:0.6rem;border:1px solid var(--border);}
+  .diff-col{padding:0.5rem;}
+  .diff-col.ucp{background:rgba(248,113,113,0.03);}
+  .diff-col.prism{background:rgba(52,211,153,0.03);}
+  .diff-label{font-size:0.45rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem;font-family:'Inter',sans-serif;}
+  .diff-col.ucp .diff-label{color:var(--red);}
+  .diff-col.prism .diff-label{color:var(--green);}
+  .diff-line{padding:0.1rem 0;color:var(--text-dim);}
+  .diff-line.added{color:var(--green);}
+  .diff-line .dk{color:var(--text-dim);}
 
-  /* CHAT inline */
-  .inline-chat {
-    background:var(--surface-3); border:1px solid var(--border); margin-top:0.8rem;
-    max-height:300px; overflow-y:auto; padding:0.8rem;
-  }
-  .ic-msg { margin-bottom:0.6rem; font-size:0.8rem; line-height:1.6; }
-  .ic-msg .ic-role { font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.15rem; }
-  .ic-msg.customer .ic-role { color:var(--blue); }
-  .ic-msg.agent .ic-role { color:var(--gold); }
-  .ic-msg .ic-text { color:var(--text-muted); }
-  .ic-msg.agent .ic-text { color:var(--text); }
-  .ic-tool {
-    font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--purple);
-    padding:0.2rem 0.5rem; background:rgba(167,139,250,0.08); margin:0.3rem 0; display:inline-block;
-  }
+  /* ── CHAT ── */
+  .inline-chat{background:var(--surface-3);border:1px solid var(--border);margin-top:0.6rem;max-height:280px;overflow-y:auto;padding:0.6rem;}
+  .ic-msg{margin-bottom:0.5rem;font-size:0.75rem;line-height:1.5;}
+  .ic-msg .ic-role{font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.1rem;}
+  .ic-msg.customer .ic-role{color:var(--blue);}
+  .ic-msg.agent .ic-role{color:var(--gold);}
+  .ic-msg .ic-text{color:var(--text-muted);}
+  .ic-msg.agent .ic-text{color:var(--text);}
+  .ic-tool{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--purple);padding:0.15rem 0.4rem;background:rgba(167,139,250,0.06);margin:0.2rem 0;display:inline-block;}
+  .typing-cursor{display:inline-block;width:2px;height:0.8em;background:var(--gold);animation:blink 0.8s infinite;vertical-align:text-bottom;margin-left:1px;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-  /* Interactive chat at bottom */
-  .live-chat-bar {
-    display:none; position:fixed; bottom:0; left:0; right:380px;
-    background:var(--surface); border-top:1px solid var(--border);
-    padding:0.8rem 1.5rem; z-index:50;
+  /* ── INTERACTIVE MODE ── */
+  .interactive-bar{display:none;border-top:1px solid var(--border);background:var(--surface);padding:0.5rem 1rem;}
+  .interactive-bar.visible{display:flex;gap:0.8rem;align-items:center;flex-wrap:wrap;}
+  .ib-section{display:flex;gap:0.4rem;align-items:center;}
+  .ib-label{font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;}
+  .ib-input{background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:0.35rem 0.7rem;font-size:0.75rem;font-family:'Inter',sans-serif;outline:none;min-width:200px;}
+  .ib-input:focus{border-color:var(--gold);}
+  .ib-btn{background:var(--gold);border:none;color:var(--bg);padding:0.35rem 0.8rem;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;}
+  .ib-chat-input{flex:1;min-width:250px;}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:1024px){
+    .app{grid-template-columns:1fr 260px;}
+    .arch-graph{height:140px;}
   }
-  .live-chat-bar.visible { display:flex; gap:0.8rem; align-items:center; }
-  .live-chat-bar input {
-    flex:1; background:var(--surface-2); border:1px solid var(--border); color:var(--text);
-    padding:0.6rem 1rem; font-size:0.85rem; font-family:'Inter',sans-serif; outline:none;
+  @media(max-width:768px){
+    .app{grid-template-columns:1fr;grid-template-rows:auto auto 1fr auto;}
+    .event-panel{display:none;}
+    .arch-graph{height:120px;}
+    .header-metrics{display:none;}
+    .journey-bar.visible{grid-column:1;}
+    .interactive-bar.visible{flex-direction:column;align-items:stretch;}
+    .ib-input{min-width:auto;width:100%;}
+    .hero h1{font-size:2rem;}
   }
-  .live-chat-bar input:focus { border-color:var(--gold); }
-  .live-chat-bar button {
-    background:var(--gold); border:none; color:var(--bg); padding:0.6rem 1.5rem;
-    font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
-    font-family:'Inter',sans-serif;
+  @media(max-width:480px){
+    header{flex-wrap:wrap;gap:0.5rem;}
+    .ctx .ctx-name{font-size:0.4rem;}
+    .product-row{flex-direction:column;}
+    .mini-product{min-width:auto;}
+    .sc-data-grid{grid-template-columns:1fr;}
+    .enrich-split{grid-template-columns:1fr;}
+    .enrich-divider{height:1px;width:100%;}
+    .diff-view{grid-template-columns:1fr;}
   }
-  .live-chat-bar .chat-label { font-size:0.6rem; color:var(--gold); letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap; }
 </style>
 </head>
 <body>
-
 <header>
-  <div class="logo-area">
-    <div>
-      <div class="logo">PRISM</div>
-      <div class="logo-sub">Unified Commerce Intelligence Platform</div>
-    </div>
+  <div class="logo-area"><div><div class="logo">PRISM</div><div class="logo-sub">Unified Commerce Intelligence</div></div></div>
+  <div class="header-metrics" id="headerMetrics">
+    <div class="hm"><div class="hm-val" id="hmEvents">0</div><div class="hm-label">Events</div></div>
+    <div class="hm"><div class="hm-val" id="hmMcp">0</div><div class="hm-label">MCP Calls</div></div>
+    <div class="hm"><div class="hm-val" id="hmLatency">0ms</div><div class="hm-label">Avg Latency</div></div>
+    <div class="hm"><div class="hm-val" id="hmContexts">0/7</div><div class="hm-label">Contexts</div></div>
   </div>
-  <div class="header-status">
-    <span><span class="status-dot"></span><span class="status-text">7 MCP Servers Online</span></span>
-    <span class="status-text" id="headerTenantLabel">Tenant: Gucci</span>
+  <div class="header-right">
+    <span><span class="status-dot"></span><span class="status-text" id="headerTenantLabel">Gucci</span></span>
     <select class="tenant-pill" id="tenantSelect" onchange="switchTenantAndRerun()">
       <option value="gucci">Gucci</option>
       <option value="louis-vuitton">Louis Vuitton</option>
       <option value="burberry">Burberry</option>
     </select>
+    <button class="sound-toggle" id="soundBtn" onclick="toggleSound()" title="Toggle sound">&#9834;</button>
   </div>
 </header>
 
 <div class="app">
-  <!-- Context Bar -->
   <div class="context-bar" id="contextBar">
     <div class="ctx" id="ctx-catalogue"><div class="ctx-icon">&#9635;</div><div class="ctx-name">Catalogue</div></div>
     <div class="ctx" id="ctx-intelligence"><div class="ctx-icon">&#9672;</div><div class="ctx-name">Intelligence</div></div>
@@ -262,16 +259,13 @@
     <div class="ctx" id="ctx-agentic"><div class="ctx-icon">&#9733;</div><div class="ctx-name">Agentic CX</div></div>
   </div>
 
-  <!-- Main Panel -->
+  <div class="arch-graph" id="archGraph"><canvas id="archCanvas"></canvas></div>
+
   <div class="main-panel" id="mainPanel">
     <div class="hero" id="heroSection">
       <h1>The <em>Intelligence</em> Layer<br>for Luxury Commerce</h1>
-      <div class="hero-sub">
-        PRISM orchestrates 7 bounded contexts through MCP-native agent architecture — from AI-powered catalogue enrichment through to personalised styling, multimodal discovery, and intelligent payment routing.
-      </div>
-      <button class="run-demo-btn" id="demoBtn" onclick="runDemo()">
-        Run Full Demo
-      </button>
+      <div class="hero-sub">7 bounded contexts orchestrated through MCP-native architecture — catalogue enrichment, multimodal discovery, virtual try-on, personalised styling, and intelligent payment routing.</div>
+      <button class="run-demo-btn" id="demoBtn" onclick="runDemo()">Run Full Demo</button>
       <div class="demo-progress" id="demoProgress" style="display:none">
         <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         <div class="progress-text" id="progressText">Initialising...</div>
@@ -280,470 +274,343 @@
     <div class="stage-display" id="stageDisplay"></div>
   </div>
 
-  <!-- Event Stream Panel -->
   <div class="event-panel">
-    <div class="event-header">
-      <span>Event Stream</span>
-      <span id="eventCount">0 events</span>
-    </div>
+    <div class="event-header"><span>Event Stream</span><span id="eventCount">0</span></div>
     <div class="event-stream" id="eventStream">
-      <div class="event ev-domain"><span class="ev-time">00:00.000</span> <span class="ev-ctx">SYSTEM</span> Platform initialised — 7 MCP servers registered</div>
+      <div class="event ev-domain"><span class="ev-time">00:00</span> <span class="ev-ctx">SYS</span> 7 MCP servers registered</div>
     </div>
+  </div>
+
+  <div class="journey-bar" id="journeyBar">
+    <div class="jstep" id="js-browse"><div class="js-dot"></div><div class="js-label">Browse</div></div>
+    <div class="jstep" id="js-enrich"><div class="js-dot"></div><div class="js-label">Enrich</div></div>
+    <div class="jstep" id="js-discover"><div class="js-dot"></div><div class="js-label">Discover</div></div>
+    <div class="jstep" id="js-tryon"><div class="js-dot"></div><div class="js-label">Try-On</div></div>
+    <div class="jstep" id="js-sync"><div class="js-dot"></div><div class="js-label">Sync</div></div>
+    <div class="jstep" id="js-pay"><div class="js-dot"></div><div class="js-label">Pay</div></div>
+    <div class="jstep" id="js-style"><div class="js-dot"></div><div class="js-label">Style</div></div>
   </div>
 </div>
 
-<!-- Live Chat Bar -->
-<div class="live-chat-bar" id="liveChatBar">
-  <span class="chat-label">Aria</span>
-  <input type="text" id="liveChatInput" placeholder="Ask the stylist anything..." onkeydown="if(event.key==='Enter')sendLiveChat()">
-  <button onclick="sendLiveChat()">Send</button>
+<div class="interactive-bar" id="interactiveBar">
+  <div class="ib-section">
+    <span class="ib-label">Search</span>
+    <input class="ib-input" id="ibSearch" placeholder="Search catalogue..." onkeydown="if(event.key==='Enter')ibDoSearch()">
+    <button class="ib-btn" onclick="ibDoSearch()">Go</button>
+  </div>
+  <div class="ib-section" style="flex:1">
+    <span class="ib-label">Aria</span>
+    <input class="ib-input ib-chat-input" id="ibChat" placeholder="Ask the stylist anything..." onkeydown="if(event.key==='Enter')ibSendChat()">
+    <button class="ib-btn" onclick="ibSendChat()">Send</button>
+  </div>
 </div>
 
 <script>
-const API = '';
-let tenant = 'gucci';
-let conversationId = null;
-let eventCount = 0;
-let demoStart = 0;
-let products = [];
+const API='';
+let tenant='gucci',conversationId=null,eventCount=0,mcpCount=0,demoStart=0,products=[],completedCtx=0,soundEnabled=false,audioCtx=null,latencies=[];
 
-function switchTenant() {
-  tenant = document.getElementById('tenantSelect').value;
-  const label = tenant.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-  document.getElementById('headerTenantLabel').textContent = 'Tenant: ' + label;
+// ── Sound ──
+function toggleSound(){soundEnabled=!soundEnabled;document.getElementById('soundBtn').classList.toggle('on',soundEnabled);if(soundEnabled&&!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playTick(){if(!soundEnabled||!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=800;g.gain.value=0.03;o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.08);o.stop(audioCtx.currentTime+0.08);}
+function playChime(){if(!soundEnabled||!audioCtx)return;[880,1100,1320].forEach((f,i)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=f;g.gain.value=0.025;o.start(audioCtx.currentTime+i*0.08);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+i*0.08+0.2);o.stop(audioCtx.currentTime+i*0.08+0.2);});}
+function playDone(){if(!soundEnabled||!audioCtx)return;[660,880,1100,1320].forEach((f,i)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=f;g.gain.value=0.03;o.start(audioCtx.currentTime+i*0.12);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+i*0.12+0.3);o.stop(audioCtx.currentTime+i*0.12+0.3);});}
+
+// ── Tenant ──
+function switchTenant(){tenant=document.getElementById('tenantSelect').value;document.getElementById('headerTenantLabel').textContent=tenant.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');}
+function switchTenantAndRerun(){switchTenant();resetDemo();runDemo();}
+
+// ── Helpers ──
+async function api(m,p,b){const t0=Date.now();const o={method:m,headers:{'Content-Type':'application/json','X-Tenant-ID':tenant}};if(b)o.body=JSON.stringify(b);const r=await fetch(API+p,o);latencies.push(Date.now()-t0);return r.json();}
+function elapsed(){const ms=Date.now()-demoStart;return `${String(Math.floor(ms/1000)).padStart(2,'0')}:${String(ms%1000).padStart(3,'0').slice(0,2)}`;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+function updateMetrics(){document.getElementById('hmEvents').textContent=eventCount;document.getElementById('hmMcp').textContent=mcpCount;const avg=latencies.length?Math.round(latencies.reduce((a,b)=>a+b,0)/latencies.length):0;document.getElementById('hmLatency').textContent=avg+'ms';document.getElementById('hmContexts').textContent=completedCtx+'/7';}
+
+function addEvent(type,ctx,msg){eventCount++;if(type==='mcp')mcpCount++;playTick();const s=document.getElementById('eventStream'),el=document.createElement('div');el.className=`event ev-${type}`;el.innerHTML=`<span class="ev-time">${elapsed()}</span> <span class="ev-ctx">${ctx}</span> ${msg}`;s.appendChild(el);s.scrollTop=s.scrollHeight;updateMetrics();}
+function setCtx(id,state){const el=document.getElementById('ctx-'+id);el.classList.remove('active','running','done');if(state)el.classList.add(state);if(state==='done'){completedCtx++;updateMetrics();playChime();}}
+function setJ(id,state){const el=document.getElementById('js-'+id);el.classList.remove('active','done');if(state)el.classList.add(state);}
+function setProgress(p,t){document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressText').textContent=t;}
+function addStage(h){const d=document.getElementById('stageDisplay');d.innerHTML+=h;document.getElementById('mainPanel').scrollTop=999999;}
+
+// ── Typewriter ──
+async function typewrite(elId,text,speed=20){const el=document.getElementById(elId);if(!el)return;el.innerHTML='<span class="typing-cursor"></span>';for(let i=0;i<text.length;i++){el.innerHTML=esc(text.slice(0,i+1))+'<span class="typing-cursor"></span>';if(i%3===0)await wait(speed);}el.innerHTML=esc(text);}
+
+// ── Product gradient ──
+const GRADIENTS=['linear-gradient(135deg,#1a1a2e,#16213e)','linear-gradient(135deg,#2d1b2e,#1a1a2e)','linear-gradient(135deg,#1b2e2d,#0a1a2e)','linear-gradient(135deg,#2e2b1b,#1a1a2e)','linear-gradient(135deg,#1b1b2e,#2e1b1b)'];
+const ICONS={Bags:'&#9776;','Shoulder Bags':'&#9776;','Ready-to-Wear':'&#9734;',Shoes:'&#9824;',Accessories:'&#9830;',Outerwear:'&#9731;',default:'&#9671;'};
+function productCard(p,i){const g=GRADIENTS[i%GRADIENTS.length];const ic=ICONS[p.category]||ICONS[p.subcategory]||ICONS.default;return `<div class="mini-product"><div class="mp-image"><div class="mp-gradient" style="background:${g}"></div><div class="mp-silhouette">${ic}</div></div><div class="mp-info"><div class="mp-brand">${esc(p.brand)}</div><div class="mp-name">${esc(p.name)}</div><div class="mp-price">&euro;${p.price_amount?p.price_amount.toLocaleString():'—'}</div><div class="mp-meta">${p.sku} · Q:${((p.quality_score||0)*100).toFixed(0)}%</div></div></div>`;}
+
+// ── Architecture Graph (Canvas) ──
+let archNodes=[],archEdges=[],archAnim=null;
+const NODE_DEFS=[
+  {id:'catalogue',label:'Catalogue',x:0.08,y:0.5,color:'#60a5fa'},
+  {id:'intelligence',label:'Intelligence',x:0.22,y:0.3,color:'#d4a853'},
+  {id:'discovery',label:'Discovery',x:0.36,y:0.7,color:'#22d3ee'},
+  {id:'tryon',label:'Try-On',x:0.50,y:0.3,color:'#a78bfa'},
+  {id:'commerce',label:'Commerce',x:0.64,y:0.7,color:'#fb923c'},
+  {id:'payment',label:'Payment',x:0.78,y:0.3,color:'#f87171'},
+  {id:'agentic',label:'Agentic CX',x:0.92,y:0.5,color:'#34d399'},
+];
+function initArchGraph(){
+  const c=document.getElementById('archCanvas'),ctx=c.getContext('2d');
+  const W=c.parentElement.clientWidth,H=c.parentElement.clientHeight;
+  c.width=W*2;c.height=H*2;c.style.width=W+'px';c.style.height=H+'px';ctx.scale(2,2);
+  archNodes=NODE_DEFS.map(n=>({...n,px:n.x*W,py:n.y*H,r:18,active:false,done:false,pulsePhase:Math.random()*Math.PI*2}));
+  archEdges=[];
+  drawArch(ctx,W,H);
 }
-
-function switchTenantAndRerun() {
-  switchTenant();
-  resetDemo();
-  runDemo();
-}
-
-function resetDemo() {
-  conversationId = null;
-  eventCount = 0;
-  products = [];
-  document.getElementById('eventStream').innerHTML =
-    '<div class="event ev-domain"><span class="ev-time">00:00.000</span> <span class="ev-ctx">SYSTEM</span> Platform initialised — 7 MCP servers registered</div>';
-  document.getElementById('eventCount').textContent = '0 events';
-  document.getElementById('stageDisplay').innerHTML = '';
-  document.getElementById('stageDisplay').classList.remove('visible');
-  document.getElementById('liveChatBar').classList.remove('visible');
-  document.querySelectorAll('.ctx').forEach(c => c.classList.remove('active','running','done'));
-  const btn = document.getElementById('demoBtn');
-  btn.classList.remove('running');
-  btn.style.borderColor = ''; btn.style.color = '';
-  btn.style.pointerEvents = '';
-  btn.textContent = 'Run Full Demo';
-  document.getElementById('demoProgress').style.display = 'none';
-  document.getElementById('heroSection').style.justifyContent = 'center';
-  document.getElementById('heroSection').style.height = '100%';
-  document.getElementById('heroSection').style.paddingBottom = '';
-  document.getElementById('mainPanel').style.paddingBottom = '';
-}
-
-async function api(method, path, body) {
-  const opts = { method, headers: { 'Content-Type':'application/json', 'X-Tenant-ID': tenant } };
-  if (body) opts.body = JSON.stringify(body);
-  const r = await fetch(API + path, opts);
-  return r.json();
-}
-
-function elapsed() {
-  const ms = Date.now() - demoStart;
-  const s = Math.floor(ms/1000);
-  const m = String(ms % 1000).padStart(3,'0');
-  return `${String(s).padStart(2,'0')}:${m}`;
-}
-
-function addEvent(type, ctx, msg) {
-  eventCount++;
-  const stream = document.getElementById('eventStream');
-  const el = document.createElement('div');
-  el.className = `event ev-${type}`;
-  el.innerHTML = `<span class="ev-time">${elapsed()}</span> <span class="ev-ctx">${ctx}</span> ${msg}`;
-  stream.appendChild(el);
-  stream.scrollTop = stream.scrollHeight;
-  document.getElementById('eventCount').textContent = eventCount + ' events';
-}
-
-function setCtx(id, state) {
-  const el = document.getElementById('ctx-' + id);
-  el.classList.remove('active','running','done');
-  if (state) el.classList.add(state);
-}
-
-function setProgress(pct, text) {
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressText').textContent = text;
-}
-
-function addStage(html) {
-  const display = document.getElementById('stageDisplay');
-  display.innerHTML += html;
-  display.scrollTop = display.scrollHeight;
-  // also scroll main panel
-  const main = document.getElementById('mainPanel');
-  main.scrollTop = main.scrollHeight;
-}
-
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-// ─────────────────────────── DEMO FLOW ───────────────────────────
-async function runDemo() {
-  demoStart = Date.now();
-  const btn = document.getElementById('demoBtn');
-  btn.classList.add('running');
-  btn.textContent = 'Running Demo...';
-  document.getElementById('demoProgress').style.display = 'block';
-  document.getElementById('heroSection').style.justifyContent = 'flex-start';
-  document.getElementById('heroSection').style.height = 'auto';
-  document.getElementById('heroSection').style.paddingBottom = '0';
-  document.getElementById('stageDisplay').classList.add('visible');
-
-  try {
-    // ── STAGE 1: Catalogue ──
-    setCtx('catalogue', 'running');
-    setProgress(5, 'Loading catalogue from UCP feed...');
-    addEvent('mcp', 'CATALOGUE', 'MCP tool call: <b>list_products</b> → catalogue-service');
-    await wait(300);
-
-    const catData = await api('GET', '/api/catalogue/products?limit=50');
-    products = catData.products || [];
-    const allBrands = [...new Set(products.map(p => p.brand))];
-
-    await wait(600);
-    addEvent('domain', 'CATALOGUE', `ProductsLoadedEvent — ${catData.total_count} products, tenant="${tenant}"`);
-    await wait(400);
-    addEvent('success', 'CATALOGUE', `Schema: PUPS v1 | Brands: ${allBrands.join(', ')}`);
-    await wait(300);
-
-    const productCards = products.slice(0, 5).map(p => `
-      <div class="mini-product">
-        <div class="mp-brand">${esc(p.brand)}</div>
-        <div class="mp-name">${esc(p.name)}</div>
-        <div class="mp-price">&euro;${p.price_amount ? p.price_amount.toLocaleString() : '—'}</div>
-        <div class="mp-meta">${p.sku} &middot; ${p.enrichment_status} &middot; Q:${((p.quality_score||0)*100).toFixed(0)}%</div>
-      </div>
-    `).join('');
-
-    addStage(`
-      <div class="stage-card">
-        <div class="sc-header">
-          <div class="sc-title">1. Catalogue Intelligence</div>
-          <div class="sc-badge done">Complete</div>
-        </div>
-        <div class="sc-body">
-          Ingested <span class="highlight">${catData.total_count} luxury products</span> from UCP feed via Pub/Sub into BigQuery.
-          PRISM Unified Product Schema (PUPS) applied.
-          <div class="product-row">${productCards}</div>
-        </div>
-      </div>
-    `);
-    setCtx('catalogue', 'done');
-    await wait(1200);
-
-    // ── STAGE 2: AI Intelligence ──
-    setCtx('intelligence', 'running');
-    setProgress(20, 'Running Vertex AI enrichment pipeline...');
-    const pid = products[0]?.id;
-    if (!pid) throw new Error('No products');
-
-    addEvent('mcp', 'INTELLIGENCE', `MCP tool call: <b>enrich_product</b>(${pid.slice(0,8)}...) → intelligence-service`);
-    await wait(800);
-    addEvent('ai', 'INTELLIGENCE', 'Gemini Vision → attribute extraction (parallel)');
-    await wait(500);
-    addEvent('ai', 'INTELLIGENCE', 'Vertex AI → image quality assessment (parallel)');
-    await wait(1000);
-
-    const enriched = await api('POST', `/api/intelligence/enrich/${pid}`);
-
-    addEvent('domain', 'INTELLIGENCE', `AttributesExtractedEvent — material: ${enriched.enriched_attributes?.material || '?'}`);
-    await wait(600);
-    addEvent('ai', 'INTELLIGENCE', 'Gemini Pro → brand-voice description generation');
-    await wait(800);
-    addEvent('domain', 'INTELLIGENCE', `EmbeddingCreatedEvent — vector_id: ${enriched.embedding_vector_id || '?'}`);
-    await wait(400);
-    addEvent('success', 'INTELLIGENCE', `EnrichmentCompletedEvent — quality: ${enriched.quality_score}`);
-
-    const attrs = enriched.enriched_attributes || {};
-    const attrHtml = Object.entries(attrs).slice(0,6).map(([k,v]) =>
-      `<div class="sc-data-item"><div class="label">${esc(k)}</div><div class="value">${esc(v)}</div></div>`
-    ).join('');
-
-    addStage(`
-      <div class="stage-card">
-        <div class="sc-header">
-          <div class="sc-title">2. AI Intelligence Engine</div>
-          <div class="sc-badge done">Complete</div>
-        </div>
-        <div class="sc-body">
-          DAG orchestrator ran <span class="highlight">3 parallel steps</span>: attribute extraction + image quality (concurrent) → description generation → embedding.
-          Quality score: <span class="val success">${enriched.quality_score}</span>
-          <div class="sc-data-grid">${attrHtml}</div>
-        </div>
-      </div>
-    `);
-    setCtx('intelligence', 'done');
-    await wait(1200);
-
-    // ── STAGE 3: Discovery ──
-    setCtx('discovery', 'running');
-    setProgress(40, 'Executing multimodal semantic search...');
-
-    const query = 'black evening bag for a winter gala';
-    addEvent('mcp', 'DISCOVERY', `MCP tool call: <b>execute_search</b>("${query}") → discovery-service`);
-    await wait(700);
-    addEvent('ai', 'DISCOVERY', 'Vertex AI Vector Search → text embedding (768-dim)');
-    await wait(600);
-    addEvent('ai', 'DISCOVERY', 'ANN approximate nearest-neighbour query (parallel)');
-    await wait(900);
-
-    const searchData = await api('POST', '/api/discovery/search', { query_text: query, top_k: 5 });
-
-    addEvent('domain', 'DISCOVERY', `SearchExecutedEvent — ${searchData.total_count} results in ${searchData.query_time_ms?.toFixed(0) || 0}ms`);
-    await wait(500);
-    addEvent('success', 'DISCOVERY', `Personalisation re-ranking applied via ContextOps`);
-
-    const srHtml = (searchData.results||[]).slice(0,4).map(r => `
-      <div class="sc-data-item">
-        <div class="label">#${r.rank} — Score: ${(r.score*100).toFixed(1)}</div>
-        <div class="value">${r.product ? esc(r.product.name) : r.product_id.slice(0,20)}</div>
-      </div>
-    `).join('');
-
-    addStage(`
-      <div class="stage-card">
-        <div class="sc-header">
-          <div class="sc-title">3. Multimodal Discovery</div>
-          <div class="sc-badge done">Complete</div>
-        </div>
-        <div class="sc-body">
-          Query: <span class="highlight">"${esc(query)}"</span><br>
-          Hybrid search: text embedding + personalisation re-ranking. <span class="val">${searchData.total_count} results</span>
-          <div class="sc-data-grid">${srHtml}</div>
-        </div>
-      </div>
-    `);
-    setCtx('discovery', 'done');
-    await wait(1200);
-
-    // ── STAGE 4: Virtual Try-On ──
-    setCtx('tryon', 'running');
-    setProgress(55, 'Processing virtual try-on...');
-
-    addEvent('mcp', 'TRYON', `MCP tool call: <b>process_tryon</b>(${pid.slice(0,8)}...) → tryon-service`);
-    await wait(800);
-    addEvent('ai', 'TRYON', 'Gemini Vision → body/pose extraction (in-memory, GDPR compliant)');
-    await wait(1200);
-
-    const tryon = await api('POST', '/api/tryon/process', { product_id: pid });
-
-    addEvent('ai', 'TRYON', 'Imagen → try-on composition with brand presets');
-    await wait(700);
-    addEvent('success', 'TRYON', `TryOnCompletedEvent — confidence: ${tryon.confidence}, time: ${tryon.processing_time_ms}ms`);
-
-    addStage(`
-      <div class="stage-card">
-        <div class="sc-header">
-          <div class="sc-title">4. Virtual Try-On</div>
-          <div class="sc-badge done">Complete</div>
-        </div>
-        <div class="sc-body">
-          Product: <span class="highlight">${esc(tryon.product_name)}</span> (${esc(tryon.product_brand)})<br>
-          Confidence: <span class="val success">${(tryon.confidence*100).toFixed(1)}%</span> &nbsp;|&nbsp;
-          Latency: <span class="val">${tryon.processing_time_ms}ms</span> &nbsp;|&nbsp;
-          Privacy: <span class="success">GDPR compliant — images not persisted</span>
-        </div>
-      </div>
-    `);
-    setCtx('tryon', 'done');
-    await wait(1200);
-
-    // ── STAGE 5: Commerce (quick) ──
-    setCtx('commerce', 'running');
-    setProgress(65, 'Syncing enriched data back to UCP...');
-    addEvent('mcp', 'COMMERCE', 'MCP tool call: <b>push_enriched_product</b> → commerce-service');
-    await wait(800);
-    addEvent('domain', 'COMMERCE', 'EnrichedProductPushedEvent → UCP outbound');
-    await wait(600);
-    addEvent('domain', 'COMMERCE', 'GoogleShoppingFeedSyncedEvent → Merchant Center');
-    await wait(700);
-    addEvent('success', 'COMMERCE', 'Bidirectional UCP sync complete');
-
-    addStage(`
-      <div class="stage-card">
-        <div class="sc-header">
-          <div class="sc-title">5. Commerce Protocol</div>
-          <div class="sc-badge done">Complete</div>
-        </div>
-        <div class="sc-body">
-          Enriched product data pushed back to <span class="highlight">UCP</span> and synced to <span class="highlight">Google Shopping</span> via Content API.
-          PRISM Commerce Event Schema (PCES) applied.
-        </div>
-      </div>
-    `);
-    setCtx('commerce', 'done');
-    await wait(1200);
-
-    // ── STAGE 6: Payment ──
-    setCtx('payment', 'running');
-    setProgress(78, 'Processing payment through FlowRoute...');
-
-    addEvent('mcp', 'PAYMENT', 'MCP tool call: <b>process_payment</b>(EUR 2,450) → payment-service');
-    await wait(700);
-    addEvent('payment', 'PAYMENT', 'DAG: evaluate_routing + fetch_fx_rates (parallel)');
-    await wait(600);
-    addEvent('payment', 'PAYMENT', 'FlowRoute evaluating 3 PSPs: stripe_eu, planet_apac, adyen_global');
-    await wait(800);
-
-    const pay = await api('POST', '/api/payment/process', {
-      amount: 2450.0, currency: 'EUR', customer_currency: 'USD', settlement_currency: 'EUR'
-    });
-
-    if (pay.success) {
-      addEvent('payment', 'PAYMENT', `FlowRoute → selected PSP: ${pay.psp_id}`);
-      await wait(500);
-      addEvent('success', 'PAYMENT', `PaymentAuthorisedEvent — txn: ${pay.psp_transaction_id}`);
-    } else {
-      addEvent('payment', 'PAYMENT', `Payment declined: ${pay.error}`);
+function drawArch(ctx,W,H){
+  ctx.clearRect(0,0,W,H);
+  // edges
+  archEdges.forEach(e=>{
+    const from=archNodes.find(n=>n.id===e.from),to=archNodes.find(n=>n.id===e.to);
+    if(!from||!to)return;
+    ctx.beginPath();ctx.moveTo(from.px,from.py);ctx.lineTo(to.px,to.py);
+    ctx.strokeStyle=e.active?e.color||'rgba(212,168,83,0.6)':'rgba(30,42,58,0.4)';
+    ctx.lineWidth=e.active?1.5:0.5;ctx.stroke();
+    if(e.active){// animated particle
+      const t=(Date.now()%1500)/1500;
+      const px=from.px+(to.px-from.px)*t,py=from.py+(to.py-from.py)*t;
+      ctx.beginPath();ctx.arc(px,py,2,0,Math.PI*2);ctx.fillStyle=e.color||'var(--gold)';ctx.fill();
     }
+  });
+  // nodes
+  archNodes.forEach(n=>{
+    const pulse=Math.sin(Date.now()/500+n.pulsePhase)*0.15+0.85;
+    ctx.beginPath();ctx.arc(n.px,n.py,n.r,0,Math.PI*2);
+    if(n.active){ctx.fillStyle='rgba(52,211,153,0.1)';ctx.fill();ctx.strokeStyle='#34d399';ctx.lineWidth=1.5*pulse;}
+    else if(n.done){ctx.fillStyle='rgba(212,168,83,0.05)';ctx.fill();ctx.strokeStyle=n.color;ctx.lineWidth=1;}
+    else{ctx.fillStyle='rgba(13,17,23,0.8)';ctx.fill();ctx.strokeStyle='rgba(30,42,58,0.6)';ctx.lineWidth=0.5;}
+    ctx.stroke();
+    ctx.fillStyle=n.active?'#34d399':n.done?n.color:'#475569';
+    ctx.font='500 7px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.label.toUpperCase(),n.px,n.py);
+  });
+}
+function archLoop(){
+  const c=document.getElementById('archCanvas');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width/2,H=c.height/2;
+  drawArch(ctx,W,H);
+  archAnim=requestAnimationFrame(archLoop);
+}
+function setArchNode(id,state){const n=archNodes.find(x=>x.id===id);if(n){n.active=state==='running';n.done=state==='done';}}
+function addArchEdge(from,to,color){archEdges.push({from,to,color,active:true});}
 
-    addStage(`
-      <div class="stage-card">
-        <div class="sc-header">
-          <div class="sc-title">6. Payment Orchestration</div>
-          <div class="sc-badge done">Complete</div>
-        </div>
-        <div class="sc-body">
-          FlowRoute&trade; routed <span class="highlight">EUR 2,450</span> through optimal PSP.
-          <div class="sc-data-grid">
-            <div class="sc-data-item"><div class="label">Status</div><div class="value success">${pay.status || 'DECLINED'}</div></div>
-            <div class="sc-data-item"><div class="label">PSP</div><div class="value">${pay.psp_id || 'N/A'}</div></div>
-            <div class="sc-data-item"><div class="label">Transaction</div><div class="value" style="font-size:0.7rem">${pay.psp_transaction_id || 'N/A'}</div></div>
-            <div class="sc-data-item"><div class="label">Routing</div><div class="value">Parallel FX + rules</div></div>
-          </div>
-        </div>
-      </div>
-    `);
-    setCtx('payment', 'done');
-    await wait(1400);
-
-    // ── STAGE 7: Agentic CX ──
-    setCtx('agentic', 'running');
-    setProgress(88, 'Starting Personal Stylist agent...');
-
-    addEvent('mcp', 'AGENTIC CX', 'MCP tool call: <b>start_conversation</b> → agentic-cx-service');
-    await wait(600);
-    addEvent('domain', 'AGENTIC CX', 'Loading customer profile via ContextOps...');
-    await wait(500);
-    const conv = await api('POST', '/api/agent/conversation', {
-      agent_type: 'PERSONAL_STYLIST', channel: 'WEB', customer_id: 'isabella_chen'
-    });
-    conversationId = conv.conversation_id;
-    addEvent('domain', 'AGENTIC CX', `ConversationStartedEvent — id: ${conversationId.slice(0,8)}...`);
-    await wait(400);
-    addEvent('ai', 'AGENTIC CX', 'Agent persona loaded: Aria (luxury tone)');
-
-    await wait(800);
-    setProgress(92, 'Stylist processing customer request...');
-    addEvent('mcp', 'AGENTIC CX', 'MCP tool call: <b>send_message</b> → agentic-cx-service');
-    await wait(500);
-    addEvent('ai', 'AGENTIC CX', 'Gemini → intent classification + tool selection');
-    await wait(700);
-    addEvent('mcp', 'AGENTIC CX', 'MCP tool call: <b>catalogue_search</b> → catalogue-service');
-    await wait(600);
-
-    const msg1 = await api('POST', `/api/agent/conversation/${conversationId}/message`, {
-      message: 'I need a stunning dress for a winter gala in Milan'
-    });
-    const r1 = msg1.agent_response || msg1.response_content || '';
-    addEvent('domain', 'AGENTIC CX', 'ToolCallExecutedEvent — catalogue_search (3 results)');
-    await wait(400);
-    addEvent('success', 'AGENTIC CX', 'AgentResponseGeneratedEvent — Aria responded');
-
-    await wait(1000);
-    setProgress(96, 'Stylist handling follow-up...');
-    addEvent('mcp', 'AGENTIC CX', 'MCP tool call: <b>send_message</b> → "What bags would pair well?"');
-    await wait(600);
-    addEvent('ai', 'AGENTIC CX', 'Gemini → cross-category recommendation intent');
-    await wait(500);
-    addEvent('mcp', 'AGENTIC CX', 'MCP tool calls (parallel): <b>catalogue_search</b> + <b>inventory_check</b>');
-    await wait(700);
-
-    const msg2 = await api('POST', `/api/agent/conversation/${conversationId}/message`, {
-      message: 'What bags would pair well with it?'
-    });
-    const r2 = msg2.agent_response || msg2.response_content || '';
-    addEvent('domain', 'AGENTIC CX', 'ToolCallExecutedEvent — catalogue_search, inventory_check');
-    await wait(400);
-    addEvent('success', 'AGENTIC CX', 'AgentResponseGeneratedEvent — 2 parallel tool calls');
-
-    addStage(`
-      <div class="stage-card">
-        <div class="sc-header">
-          <div class="sc-title">7. Agentic CX — Personal Stylist</div>
-          <div class="sc-badge done">Complete</div>
-        </div>
-        <div class="sc-body">
-          SynapticBridge&trade; MCP orchestration powering <span class="highlight">Aria</span>, the personal stylist.
-          <div class="inline-chat">
-            <div class="ic-msg customer"><div class="ic-role">Customer</div><div class="ic-text">I need a stunning dress for a winter gala in Milan</div></div>
-            <div class="ic-tool">&#9656; MCP tool: catalogue_search, virtual_tryon</div>
-            <div class="ic-msg agent"><div class="ic-role">Aria — Personal Stylist</div><div class="ic-text">${esc(r1).slice(0,300)}${r1.length > 300 ? '...' : ''}</div></div>
-            <div class="ic-msg customer"><div class="ic-role">Customer</div><div class="ic-text">What bags would pair well with it?</div></div>
-            <div class="ic-tool">&#9656; MCP tool: catalogue_search, inventory_check</div>
-            <div class="ic-msg agent"><div class="ic-role">Aria — Personal Stylist</div><div class="ic-text">${esc(r2).slice(0,300)}${r2.length > 300 ? '...' : ''}</div></div>
-          </div>
-        </div>
-      </div>
-    `);
-    setCtx('agentic', 'done');
-    setProgress(100, 'Demo complete — all 7 bounded contexts operational');
-
-    addEvent('success', 'SYSTEM', `Full demo completed in ${elapsed()}`);
-
-    // Show live chat
-    document.getElementById('liveChatBar').classList.add('visible');
-    document.getElementById('mainPanel').style.paddingBottom = '4rem';
-
-    btn.textContent = 'Demo Complete';
-    btn.style.borderColor = 'var(--green)';
-    btn.style.color = 'var(--green)';
-
-  } catch(e) {
-    addEvent('domain', 'SYSTEM', `Error: ${e.message}`);
-    btn.textContent = 'Error — Retry';
-    btn.classList.remove('running');
-    btn.style.pointerEvents = 'auto';
-  }
+// ── Reset ──
+function resetDemo(){
+  conversationId=null;eventCount=0;mcpCount=0;completedCtx=0;products=[];latencies=[];
+  document.getElementById('eventStream').innerHTML='<div class="event ev-domain"><span class="ev-time">00:00</span> <span class="ev-ctx">SYS</span> 7 MCP servers registered</div>';
+  document.getElementById('stageDisplay').innerHTML='';
+  document.getElementById('stageDisplay').classList.remove('visible');
+  document.querySelectorAll('.ctx').forEach(c=>c.classList.remove('active','running','done'));
+  document.querySelectorAll('.jstep').forEach(j=>j.classList.remove('active','done'));
+  const btn=document.getElementById('demoBtn');btn.classList.remove('running');btn.style.borderColor='';btn.style.color='';btn.style.pointerEvents='';btn.textContent='Run Full Demo';
+  document.getElementById('demoProgress').style.display='none';
+  document.getElementById('heroSection').style.cssText='';
+  document.getElementById('mainPanel').style.paddingBottom='';
+  document.getElementById('archGraph').classList.remove('visible');
+  document.getElementById('journeyBar').classList.remove('visible');
+  document.getElementById('interactiveBar').classList.remove('visible');
+  if(archAnim){cancelAnimationFrame(archAnim);archAnim=null;}
+  archEdges=[];archNodes.forEach(n=>{n.active=false;n.done=false;});
+  updateMetrics();
 }
 
-// ── Live Chat ──
-async function sendLiveChat() {
-  const input = document.getElementById('liveChatInput');
-  const msg = input.value.trim();
-  if (!msg || !conversationId) return;
-  input.value = '';
+// ═══════════════════════════ DEMO FLOW ═══════════════════════════
+async function runDemo(){
+  demoStart=Date.now();
+  const btn=document.getElementById('demoBtn');btn.classList.add('running');btn.textContent='Running Demo...';
+  document.getElementById('demoProgress').style.display='block';
+  document.getElementById('heroSection').style.cssText='justify-content:flex-start;height:auto;padding-bottom:0';
+  document.getElementById('stageDisplay').classList.add('visible');
+  document.getElementById('archGraph').classList.add('visible');
+  document.getElementById('journeyBar').classList.add('visible');
+  initArchGraph();archLoop();
 
-  addEvent('mcp', 'AGENTIC CX', `MCP tool call: <b>send_message</b>("${esc(msg.slice(0,40))}...")`);
+  try{
+  // ── 1. CATALOGUE ──
+  setCtx('catalogue','running');setArchNode('catalogue','running');setJ('browse','active');
+  setProgress(5,'Loading catalogue from UCP feed...');
+  addEvent('mcp','CAT','tool: <b>list_products</b> → catalogue-service');await wait(800);
 
-  const r = await api('POST', `/api/agent/conversation/${conversationId}/message`, { message: msg });
-  const reply = r.agent_response || r.response_content || '';
+  const catData=await api('GET','/api/catalogue/products?limit=50');
+  products=catData.products||[];
+  const brands=[...new Set(products.map(p=>p.brand))];
 
-  addEvent('success', 'AGENTIC CX', 'AgentResponseGeneratedEvent');
+  addEvent('domain','CAT',`ProductsLoadedEvent — ${catData.total_count} products`);await wait(500);
+  addEvent('success','CAT',`PUPS schema | Brands: ${brands.join(', ')}`);await wait(400);
 
-  // Add to the inline chat in the stage card
-  const chats = document.querySelectorAll('.inline-chat');
-  const chat = chats[chats.length - 1];
-  if (chat) {
-    chat.innerHTML += `
-      <div class="ic-msg customer"><div class="ic-role">Customer</div><div class="ic-text">${esc(msg)}</div></div>
-      <div class="ic-tool">&#9656; MCP tool: catalogue_search</div>
-      <div class="ic-msg agent"><div class="ic-role">Aria — Personal Stylist</div><div class="ic-text">${esc(reply)}</div></div>
-    `;
-    chat.scrollTop = chat.scrollHeight;
+  addStage(`<div class="stage-card"><div class="sc-header"><div class="sc-title">1. Catalogue Intelligence</div><div class="sc-badge done">Complete</div></div><div class="sc-body">Ingested <span class="highlight">${catData.total_count} luxury products</span> from UCP via Pub/Sub → BigQuery. PUPS schema applied.<div class="product-row">${products.slice(0,5).map((p,i)=>productCard(p,i)).join('')}</div></div></div>`);
+  setCtx('catalogue','done');setArchNode('catalogue','done');setJ('browse','done');await wait(1200);
+
+  // ── 2. INTELLIGENCE ──
+  setCtx('intelligence','running');setArchNode('intelligence','running');setJ('enrich','active');
+  addArchEdge('catalogue','intelligence','#d4a853');
+  setProgress(18,'Running Vertex AI enrichment pipeline...');
+  const pid=products[0]?.id;if(!pid)throw new Error('No products');
+
+  addEvent('mcp','INT',`tool: <b>enrich_product</b>(${pid.slice(0,8)}) → intelligence-service`);await wait(800);
+
+  const dagHtml=`<div class="dag-vis"><div class="dag-parallel"><div class="dag-node active" id="dag-attr">extract_attributes</div><div class="dag-node active" id="dag-imgq">assess_image_quality</div></div><span class="dag-arrow">→</span><div class="dag-node" id="dag-desc">generate_description</div><span class="dag-arrow">→</span><div class="dag-node" id="dag-embed">generate_embedding</div></div>`;
+
+  addEvent('ai','INT','Gemini Vision → attribute extraction (parallel)');await wait(500);
+  addEvent('ai','INT','Vertex AI → image quality assessment (parallel)');await wait(1000);
+
+  const enriched=await api('POST',`/api/intelligence/enrich/${pid}`);
+  const attrs=enriched.enriched_attributes||{};
+  const rawProduct=products[0];
+
+  addEvent('domain','INT',`AttributesExtractedEvent — material: ${attrs.material||'?'}`);await wait(600);
+  addEvent('ai','INT','Gemini Pro → brand-voice description generation');await wait(800);
+  addEvent('domain','INT',`EmbeddingCreatedEvent — vector_id: ${enriched.embedding_vector_id||'?'}`);await wait(400);
+  addEvent('success','INT',`EnrichmentCompletedEvent — quality: ${enriched.quality_score}`);
+
+  const beforeRows=['sku','name','category','brand'].map(k=>`<div class="enrich-row"><span class="ek">${k}</span><span class="ev">${esc(rawProduct[k]||'—')}</span></div>`).join('');
+  const afterRows=Object.entries(attrs).slice(0,6).map(([k,v])=>`<div class="enrich-row new"><span class="ek">${esc(k)}</span><span class="ev">${esc(v)}</span></div>`).join('');
+
+  addStage(`<div class="stage-card"><div class="sc-header"><div class="sc-title">2. AI Intelligence Engine</div><div class="sc-badge done">Complete</div></div><div class="sc-body">DAG orchestrator: 3 steps, 2 parallel. Quality: <span class="val success">${enriched.quality_score}</span>${dagHtml}<div class="enrich-split"><div class="enrich-col before"><div class="enrich-label">Before (Raw UCP)</div>${beforeRows}</div><div class="enrich-divider"></div><div class="enrich-col after"><div class="enrich-label">After (AI Enriched)</div>${afterRows}</div></div></div></div>`);
+  setCtx('intelligence','done');setArchNode('intelligence','done');setJ('enrich','done');await wait(1200);
+
+  // ── 3. DISCOVERY ──
+  setCtx('discovery','running');setArchNode('discovery','running');setJ('discover','active');
+  addArchEdge('intelligence','discovery','#22d3ee');
+  setProgress(38,'Executing multimodal semantic search...');
+  const query='black evening bag for a winter gala';
+
+  addEvent('mcp','DISC',`tool: <b>execute_search</b>("${query}") → discovery-service`);await wait(700);
+  addEvent('ai','DISC','Vertex AI Vector Search → text embedding (768-dim)');await wait(600);
+  addEvent('ai','DISC','ANN nearest-neighbour query');await wait(800);
+
+  const searchData=await api('POST','/api/discovery/search',{query_text:query,top_k:5});
+  addEvent('domain','DISC',`SearchExecutedEvent — ${searchData.total_count} results`);await wait(400);
+  addEvent('success','DISC','Personalisation re-ranking applied via ContextOps');
+
+  const srHtml=(searchData.results||[]).slice(0,4).map(r=>`<div class="sc-data-item"><div class="label">#${r.rank} · ${(r.score*100).toFixed(1)}</div><div class="value">${r.product?esc(r.product.name):r.product_id.slice(0,16)}</div></div>`).join('');
+  addStage(`<div class="stage-card"><div class="sc-header"><div class="sc-title">3. Multimodal Discovery</div><div class="sc-badge done">Complete</div></div><div class="sc-body">Query: <span class="highlight">"${esc(query)}"</span> — Hybrid: text embedding + personalisation. <span class="val">${searchData.total_count} results</span><div class="sc-data-grid">${srHtml}</div></div></div>`);
+  setCtx('discovery','done');setArchNode('discovery','done');setJ('discover','done');await wait(1200);
+
+  // ── 4. TRY-ON ──
+  setCtx('tryon','running');setArchNode('tryon','running');setJ('tryon','active');
+  addArchEdge('discovery','tryon','#a78bfa');
+  setProgress(52,'Processing virtual try-on...');
+
+  addEvent('mcp','TRYON',`tool: <b>process_tryon</b>(${pid.slice(0,8)}) → tryon-service`);await wait(800);
+  addEvent('ai','TRYON','Gemini Vision → body/pose extraction (GDPR: in-memory only)');await wait(1200);
+
+  const tryon=await api('POST','/api/tryon/process',{product_id:pid});
+  addEvent('ai','TRYON','Imagen → composition with brand presets');await wait(600);
+  addEvent('success','TRYON',`TryOnCompletedEvent — confidence: ${tryon.confidence}`);
+
+  addStage(`<div class="stage-card"><div class="sc-header"><div class="sc-title">4. Virtual Try-On</div><div class="sc-badge done">Complete</div></div><div class="sc-body">Product: <span class="highlight">${esc(tryon.product_name)}</span> (${esc(tryon.product_brand)})<br>Confidence: <span class="val success">${(tryon.confidence*100).toFixed(1)}%</span> · Latency: <span class="val">${tryon.processing_time_ms}ms</span> · <span class="success">GDPR: images not persisted</span></div></div>`);
+  setCtx('tryon','done');setArchNode('tryon','done');setJ('tryon','done');await wait(1200);
+
+  // ── 5. COMMERCE ──
+  setCtx('commerce','running');setArchNode('commerce','running');setJ('sync','active');
+  addArchEdge('tryon','commerce','#fb923c');
+  setProgress(65,'Syncing enriched data back to UCP...');
+
+  addEvent('mcp','COM','tool: <b>push_enriched_product</b> → commerce-service');await wait(700);
+  addEvent('domain','COM','EnrichedProductPushedEvent → UCP outbound');await wait(600);
+  addEvent('domain','COM','GoogleShoppingFeedSyncedEvent → Merchant Center');await wait(500);
+  addEvent('success','COM','Bidirectional UCP sync complete');
+
+  const diffUcp=['{ "sku": "GUCCI-BAG-001"','  "name": "GG Marmont..."','  "price": 2450','  "images": [...]','  "attributes": {}','  "description": ""','}'].map(l=>`<div class="diff-line"><span class="dk">${esc(l)}</span></div>`).join('');
+  const diffPrism=['{ "sku": "GUCCI-BAG-001"','  "name": "GG Marmont..."','  "price": 2450','  "images": [...]',`  "material": "${attrs.material||'leather'}"`,`  "colour": "${attrs.colour||'nero'}"`,`  "silhouette": "${attrs.silhouette||'structured'}"`,`  "occasion": "${attrs.occasion||'evening'}"`,`  "embedding_id": "${(enriched.embedding_vector_id||'').slice(0,12)}"`,`  "quality_score": ${enriched.quality_score}`,'}'].map((l,i)=>`<div class="diff-line${i>=4?' added':''}">${esc(l)}</div>`).join('');
+
+  addStage(`<div class="stage-card"><div class="sc-header"><div class="sc-title">5. Commerce Protocol</div><div class="sc-badge done">Complete</div></div><div class="sc-body">Enriched data → <span class="highlight">UCP</span> + <span class="highlight">Google Shopping</span>. PCES schema applied.<div class="diff-view"><div class="diff-col ucp"><div class="diff-label">UCP Raw Schema</div>${diffUcp}</div><div class="diff-col prism"><div class="diff-label">PRISM Enriched</div>${diffPrism}</div></div></div></div>`);
+  setCtx('commerce','done');setArchNode('commerce','done');setJ('sync','done');await wait(1200);
+
+  // ── 6. PAYMENT ──
+  setCtx('payment','running');setArchNode('payment','running');setJ('pay','active');
+  addArchEdge('commerce','payment','#f87171');
+  setProgress(78,'Processing payment through FlowRoute...');
+
+  addEvent('mcp','PAY','tool: <b>process_payment</b>(EUR 2,450) → payment-service');await wait(700);
+  addEvent('payment','PAY','DAG: evaluate_routing ∥ fetch_fx_rates');await wait(600);
+  addEvent('payment','PAY','FlowRoute evaluating: stripe_eu, planet_apac, adyen_global');await wait(800);
+
+  const pay=await api('POST','/api/payment/process',{amount:2450,currency:'EUR',customer_currency:'USD',settlement_currency:'EUR'});
+  if(pay.success){addEvent('payment','PAY',`FlowRoute → ${pay.psp_id}`);await wait(500);addEvent('success','PAY',`PaymentAuthorisedEvent — ${pay.psp_transaction_id}`);}
+  else{addEvent('payment','PAY',`Declined: ${pay.error}`);}
+
+  const fxRows=[
+    {psp:'stripe_eu',rate:'1.0842',spread:'0.20%',score:95,best:true},
+    {psp:'planet_apac',rate:'1.0831',spread:'0.30%',score:88,best:false},
+    {psp:'adyen_global',rate:'1.0825',spread:'0.35%',score:82,best:false},
+  ];
+  const fxHtml=`<table class="fx-table"><tr><th>PSP</th><th>EUR/USD</th><th>Spread</th><th>Score</th></tr>${fxRows.map(r=>`<tr class="${r.best?'best':''}"><td>${r.psp}</td><td>${r.rate}</td><td>${r.spread}</td><td><div class="fx-bar"><div class="fx-fill" style="width:${r.score}%"></div></div></td></tr>`).join('')}</table>`;
+
+  addStage(`<div class="stage-card"><div class="sc-header"><div class="sc-title">6. Payment Orchestration</div><div class="sc-badge done">Complete</div></div><div class="sc-body">FlowRoute&trade; routed <span class="highlight">EUR 2,450</span> — parallel FX comparison across 3 PSPs.${fxHtml}<div class="sc-data-grid"><div class="sc-data-item"><div class="label">Status</div><div class="value success">${pay.status||'DECLINED'}</div></div><div class="sc-data-item"><div class="label">PSP</div><div class="value">${pay.psp_id||'N/A'}</div></div><div class="sc-data-item"><div class="label">Transaction</div><div class="value" style="font-size:0.65rem">${pay.psp_transaction_id||'N/A'}</div></div><div class="sc-data-item"><div class="label">FX Savings</div><div class="value success">+0.17% vs worst</div></div></div></div></div>`);
+  setCtx('payment','done');setArchNode('payment','done');setJ('pay','done');await wait(1300);
+
+  // ── 7. AGENTIC CX ──
+  setCtx('agentic','running');setArchNode('agentic','running');setJ('style','active');
+  addArchEdge('payment','agentic','#34d399');
+  setProgress(88,'Starting Personal Stylist agent...');
+
+  addEvent('mcp','AGT','tool: <b>start_conversation</b> → agentic-cx-service');await wait(600);
+  addEvent('domain','AGT','Loading customer profile via ContextOps...');await wait(500);
+  const conv=await api('POST','/api/agent/conversation',{agent_type:'PERSONAL_STYLIST',channel:'WEB',customer_id:'isabella_chen'});
+  conversationId=conv.conversation_id;
+  addEvent('domain','AGT',`ConversationStartedEvent — ${conversationId.slice(0,8)}`);await wait(400);
+  addEvent('ai','AGT','Persona: Aria (luxury tone)');await wait(800);
+
+  setProgress(92,'Stylist processing...');
+  addEvent('mcp','AGT','tool: <b>send_message</b> "dress for winter gala"');await wait(500);
+  addEvent('ai','AGT','Gemini → intent: outfit_recommendation');await wait(600);
+  addEvent('mcp','AGT','tool: <b>catalogue_search</b> → catalogue-service');await wait(600);
+
+  const msg1=await api('POST',`/api/agent/conversation/${conversationId}/message`,{message:'I need a stunning dress for a winter gala in Milan'});
+  const r1=msg1.agent_response||msg1.response_content||'';
+  addEvent('success','AGT','AgentResponseGeneratedEvent');await wait(800);
+
+  setProgress(96,'Follow-up...');
+  addEvent('mcp','AGT','tool: <b>send_message</b> "bags to pair?"');await wait(500);
+  addEvent('mcp','AGT','parallel: <b>catalogue_search</b> + <b>inventory_check</b>');await wait(700);
+
+  const msg2=await api('POST',`/api/agent/conversation/${conversationId}/message`,{message:'What bags would pair well with it?'});
+  const r2=msg2.agent_response||msg2.response_content||'';
+  addEvent('success','AGT','AgentResponseGeneratedEvent — 2 tool calls');
+
+  const chatId='tw-'+Date.now();
+  addStage(`<div class="stage-card"><div class="sc-header"><div class="sc-title">7. Agentic CX — Personal Stylist</div><div class="sc-badge done">Complete</div></div><div class="sc-body">SynapticBridge&trade; MCP orchestration — <span class="highlight">Aria</span><div class="inline-chat" id="demoChat"><div class="ic-msg customer"><div class="ic-role">Customer</div><div class="ic-text">I need a stunning dress for a winter gala in Milan</div></div><div class="ic-tool">▸ MCP: catalogue_search, virtual_tryon</div><div class="ic-msg agent"><div class="ic-role">Aria</div><div class="ic-text" id="${chatId}"></div></div><div class="ic-msg customer"><div class="ic-role">Customer</div><div class="ic-text">What bags would pair well with it?</div></div><div class="ic-tool">▸ MCP: catalogue_search ∥ inventory_check</div><div class="ic-msg agent"><div class="ic-role">Aria</div><div class="ic-text" id="${chatId}2"></div></div></div></div></div>`);
+
+  await typewrite(chatId,r1,15);await wait(300);
+  await typewrite(chatId+'2',r2,15);
+
+  setCtx('agentic','done');setArchNode('agentic','done');setJ('style','done');
+  setProgress(100,'Demo complete — all 7 bounded contexts operational');
+  addEvent('success','SYS',`Full demo completed in ${elapsed()}`);
+  playDone();
+
+  // Enable interactive mode
+  document.getElementById('interactiveBar').classList.add('visible');
+  document.getElementById('mainPanel').style.paddingBottom='3.5rem';
+  btn.textContent='Demo Complete — Explore Below';btn.style.borderColor='var(--green)';btn.style.color='var(--green)';
+
+  }catch(e){addEvent('domain','SYS',`Error: ${e.message}`);btn.textContent='Error — Retry';btn.classList.remove('running');btn.style.pointerEvents='auto';}
+}
+
+// ── Interactive Mode ──
+async function ibDoSearch(){
+  const q=document.getElementById('ibSearch').value.trim();if(!q)return;
+  addEvent('mcp','DISC',`Interactive search: "${esc(q.slice(0,30))}"`);
+  const d=await api('POST','/api/discovery/search',{query_text:q,top_k:5});
+  const results=(d.results||[]).slice(0,3).map(r=>r.product?r.product.name:r.product_id.slice(0,16)).join(', ');
+  addEvent('success','DISC',`${d.total_count} results: ${results}`);
+}
+async function ibSendChat(){
+  const input=document.getElementById('ibChat'),msg=input.value.trim();if(!msg||!conversationId)return;input.value='';
+  addEvent('mcp','AGT',`send_message: "${esc(msg.slice(0,40))}"`);
+  const r=await api('POST',`/api/agent/conversation/${conversationId}/message`,{message:msg});
+  const reply=r.agent_response||r.response_content||'';
+  addEvent('success','AGT','AgentResponseGeneratedEvent');
+  const chat=document.getElementById('demoChat');
+  if(chat){
+    const tid='tw-'+Date.now();
+    chat.innerHTML+=`<div class="ic-msg customer"><div class="ic-role">You</div><div class="ic-text">${esc(msg)}</div></div><div class="ic-tool">▸ MCP: catalogue_search</div><div class="ic-msg agent"><div class="ic-role">Aria</div><div class="ic-text" id="${tid}"></div></div>`;
+    chat.scrollTop=999999;
+    await typewrite(tid,reply,12);
   }
 }
 </script>
