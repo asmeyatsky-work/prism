@@ -242,7 +242,7 @@
   <div class="header-status">
     <span><span class="status-dot"></span><span class="status-text">7 MCP Servers Online</span></span>
     <span class="status-text" id="headerTenantLabel">Tenant: Gucci</span>
-    <select class="tenant-pill" id="tenantSelect" onchange="switchTenant()">
+    <select class="tenant-pill" id="tenantSelect" onchange="switchTenantAndRerun()">
       <option value="gucci">Gucci</option>
       <option value="louis-vuitton">Louis Vuitton</option>
       <option value="burberry">Burberry</option>
@@ -309,7 +309,37 @@ let products = [];
 
 function switchTenant() {
   tenant = document.getElementById('tenantSelect').value;
-  document.getElementById('headerTenantLabel').textContent = 'Tenant: ' + tenant.charAt(0).toUpperCase() + tenant.slice(1);
+  const label = tenant.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  document.getElementById('headerTenantLabel').textContent = 'Tenant: ' + label;
+}
+
+function switchTenantAndRerun() {
+  switchTenant();
+  resetDemo();
+  runDemo();
+}
+
+function resetDemo() {
+  conversationId = null;
+  eventCount = 0;
+  products = [];
+  document.getElementById('eventStream').innerHTML =
+    '<div class="event ev-domain"><span class="ev-time">00:00.000</span> <span class="ev-ctx">SYSTEM</span> Platform initialised — 7 MCP servers registered</div>';
+  document.getElementById('eventCount').textContent = '0 events';
+  document.getElementById('stageDisplay').innerHTML = '';
+  document.getElementById('stageDisplay').classList.remove('visible');
+  document.getElementById('liveChatBar').classList.remove('visible');
+  document.querySelectorAll('.ctx').forEach(c => c.classList.remove('active','running','done'));
+  const btn = document.getElementById('demoBtn');
+  btn.classList.remove('running');
+  btn.style.borderColor = ''; btn.style.color = '';
+  btn.style.pointerEvents = '';
+  btn.textContent = 'Run Full Demo';
+  document.getElementById('demoProgress').style.display = 'none';
+  document.getElementById('heroSection').style.justifyContent = 'center';
+  document.getElementById('heroSection').style.height = '100%';
+  document.getElementById('heroSection').style.paddingBottom = '';
+  document.getElementById('mainPanel').style.paddingBottom = '';
 }
 
 async function api(method, path, body) {
@@ -383,8 +413,11 @@ async function runDemo() {
     products = catData.products || [];
     const allBrands = [...new Set(products.map(p => p.brand))];
 
+    await wait(600);
     addEvent('domain', 'CATALOGUE', `ProductsLoadedEvent — ${catData.total_count} products, tenant="${tenant}"`);
+    await wait(400);
     addEvent('success', 'CATALOGUE', `Schema: PUPS v1 | Brands: ${allBrands.join(', ')}`);
+    await wait(300);
 
     const productCards = products.slice(0, 5).map(p => `
       <div class="mini-product">
@@ -409,7 +442,7 @@ async function runDemo() {
       </div>
     `);
     setCtx('catalogue', 'done');
-    await wait(400);
+    await wait(1200);
 
     // ── STAGE 2: AI Intelligence ──
     setCtx('intelligence', 'running');
@@ -418,15 +451,20 @@ async function runDemo() {
     if (!pid) throw new Error('No products');
 
     addEvent('mcp', 'INTELLIGENCE', `MCP tool call: <b>enrich_product</b>(${pid.slice(0,8)}...) → intelligence-service`);
+    await wait(800);
     addEvent('ai', 'INTELLIGENCE', 'Gemini Vision → attribute extraction (parallel)');
+    await wait(500);
     addEvent('ai', 'INTELLIGENCE', 'Vertex AI → image quality assessment (parallel)');
-    await wait(200);
+    await wait(1000);
 
     const enriched = await api('POST', `/api/intelligence/enrich/${pid}`);
 
     addEvent('domain', 'INTELLIGENCE', `AttributesExtractedEvent — material: ${enriched.enriched_attributes?.material || '?'}`);
+    await wait(600);
     addEvent('ai', 'INTELLIGENCE', 'Gemini Pro → brand-voice description generation');
+    await wait(800);
     addEvent('domain', 'INTELLIGENCE', `EmbeddingCreatedEvent — vector_id: ${enriched.embedding_vector_id || '?'}`);
+    await wait(400);
     addEvent('success', 'INTELLIGENCE', `EnrichmentCompletedEvent — quality: ${enriched.quality_score}`);
 
     const attrs = enriched.enriched_attributes || {};
@@ -448,7 +486,7 @@ async function runDemo() {
       </div>
     `);
     setCtx('intelligence', 'done');
-    await wait(400);
+    await wait(1200);
 
     // ── STAGE 3: Discovery ──
     setCtx('discovery', 'running');
@@ -456,12 +494,16 @@ async function runDemo() {
 
     const query = 'black evening bag for a winter gala';
     addEvent('mcp', 'DISCOVERY', `MCP tool call: <b>execute_search</b>("${query}") → discovery-service`);
-    addEvent('ai', 'DISCOVERY', 'Vertex AI Vector Search → text embedding + ANN query (parallel)');
-    await wait(200);
+    await wait(700);
+    addEvent('ai', 'DISCOVERY', 'Vertex AI Vector Search → text embedding (768-dim)');
+    await wait(600);
+    addEvent('ai', 'DISCOVERY', 'ANN approximate nearest-neighbour query (parallel)');
+    await wait(900);
 
     const searchData = await api('POST', '/api/discovery/search', { query_text: query, top_k: 5 });
 
     addEvent('domain', 'DISCOVERY', `SearchExecutedEvent — ${searchData.total_count} results in ${searchData.query_time_ms?.toFixed(0) || 0}ms`);
+    await wait(500);
     addEvent('success', 'DISCOVERY', `Personalisation re-ranking applied via ContextOps`);
 
     const srHtml = (searchData.results||[]).slice(0,4).map(r => `
@@ -485,19 +527,21 @@ async function runDemo() {
       </div>
     `);
     setCtx('discovery', 'done');
-    await wait(400);
+    await wait(1200);
 
     // ── STAGE 4: Virtual Try-On ──
     setCtx('tryon', 'running');
     setProgress(55, 'Processing virtual try-on...');
 
     addEvent('mcp', 'TRYON', `MCP tool call: <b>process_tryon</b>(${pid.slice(0,8)}...) → tryon-service`);
+    await wait(800);
     addEvent('ai', 'TRYON', 'Gemini Vision → body/pose extraction (in-memory, GDPR compliant)');
-    await wait(200);
+    await wait(1200);
 
     const tryon = await api('POST', '/api/tryon/process', { product_id: pid });
 
     addEvent('ai', 'TRYON', 'Imagen → try-on composition with brand presets');
+    await wait(700);
     addEvent('success', 'TRYON', `TryOnCompletedEvent — confidence: ${tryon.confidence}, time: ${tryon.processing_time_ms}ms`);
 
     addStage(`
@@ -515,15 +559,17 @@ async function runDemo() {
       </div>
     `);
     setCtx('tryon', 'done');
-    await wait(400);
+    await wait(1200);
 
     // ── STAGE 5: Commerce (quick) ──
     setCtx('commerce', 'running');
     setProgress(65, 'Syncing enriched data back to UCP...');
     addEvent('mcp', 'COMMERCE', 'MCP tool call: <b>push_enriched_product</b> → commerce-service');
+    await wait(800);
     addEvent('domain', 'COMMERCE', 'EnrichedProductPushedEvent → UCP outbound');
+    await wait(600);
     addEvent('domain', 'COMMERCE', 'GoogleShoppingFeedSyncedEvent → Merchant Center');
-    await wait(500);
+    await wait(700);
     addEvent('success', 'COMMERCE', 'Bidirectional UCP sync complete');
 
     addStage(`
@@ -539,15 +585,18 @@ async function runDemo() {
       </div>
     `);
     setCtx('commerce', 'done');
-    await wait(400);
+    await wait(1200);
 
     // ── STAGE 6: Payment ──
     setCtx('payment', 'running');
     setProgress(78, 'Processing payment through FlowRoute...');
 
     addEvent('mcp', 'PAYMENT', 'MCP tool call: <b>process_payment</b>(EUR 2,450) → payment-service');
+    await wait(700);
     addEvent('payment', 'PAYMENT', 'DAG: evaluate_routing + fetch_fx_rates (parallel)');
-    await wait(200);
+    await wait(600);
+    addEvent('payment', 'PAYMENT', 'FlowRoute evaluating 3 PSPs: stripe_eu, planet_apac, adyen_global');
+    await wait(800);
 
     const pay = await api('POST', '/api/payment/process', {
       amount: 2450.0, currency: 'EUR', customer_currency: 'USD', settlement_currency: 'EUR'
@@ -555,6 +604,7 @@ async function runDemo() {
 
     if (pay.success) {
       addEvent('payment', 'PAYMENT', `FlowRoute → selected PSP: ${pay.psp_id}`);
+      await wait(500);
       addEvent('success', 'PAYMENT', `PaymentAuthorisedEvent — txn: ${pay.psp_transaction_id}`);
     } else {
       addEvent('payment', 'PAYMENT', `Payment declined: ${pay.error}`);
@@ -578,37 +628,57 @@ async function runDemo() {
       </div>
     `);
     setCtx('payment', 'done');
-    await wait(400);
+    await wait(1400);
 
     // ── STAGE 7: Agentic CX ──
     setCtx('agentic', 'running');
     setProgress(88, 'Starting Personal Stylist agent...');
 
     addEvent('mcp', 'AGENTIC CX', 'MCP tool call: <b>start_conversation</b> → agentic-cx-service');
+    await wait(600);
+    addEvent('domain', 'AGENTIC CX', 'Loading customer profile via ContextOps...');
+    await wait(500);
     const conv = await api('POST', '/api/agent/conversation', {
       agent_type: 'PERSONAL_STYLIST', channel: 'WEB', customer_id: 'isabella_chen'
     });
     conversationId = conv.conversation_id;
     addEvent('domain', 'AGENTIC CX', `ConversationStartedEvent — id: ${conversationId.slice(0,8)}...`);
+    await wait(400);
+    addEvent('ai', 'AGENTIC CX', 'Agent persona loaded: Aria (luxury tone)');
 
-    await wait(300);
+    await wait(800);
+    setProgress(92, 'Stylist processing customer request...');
     addEvent('mcp', 'AGENTIC CX', 'MCP tool call: <b>send_message</b> → agentic-cx-service');
+    await wait(500);
     addEvent('ai', 'AGENTIC CX', 'Gemini → intent classification + tool selection');
+    await wait(700);
+    addEvent('mcp', 'AGENTIC CX', 'MCP tool call: <b>catalogue_search</b> → catalogue-service');
+    await wait(600);
 
     const msg1 = await api('POST', `/api/agent/conversation/${conversationId}/message`, {
       message: 'I need a stunning dress for a winter gala in Milan'
     });
     const r1 = msg1.agent_response || msg1.response_content || '';
-    addEvent('domain', 'AGENTIC CX', 'ToolCallExecutedEvent — catalogue_search');
-    addEvent('success', 'AGENTIC CX', 'AgentResponseGeneratedEvent');
+    addEvent('domain', 'AGENTIC CX', 'ToolCallExecutedEvent — catalogue_search (3 results)');
+    await wait(400);
+    addEvent('success', 'AGENTIC CX', 'AgentResponseGeneratedEvent — Aria responded');
 
-    await wait(300);
+    await wait(1000);
+    setProgress(96, 'Stylist handling follow-up...');
+    addEvent('mcp', 'AGENTIC CX', 'MCP tool call: <b>send_message</b> → "What bags would pair well?"');
+    await wait(600);
+    addEvent('ai', 'AGENTIC CX', 'Gemini → cross-category recommendation intent');
+    await wait(500);
+    addEvent('mcp', 'AGENTIC CX', 'MCP tool calls (parallel): <b>catalogue_search</b> + <b>inventory_check</b>');
+    await wait(700);
+
     const msg2 = await api('POST', `/api/agent/conversation/${conversationId}/message`, {
       message: 'What bags would pair well with it?'
     });
     const r2 = msg2.agent_response || msg2.response_content || '';
     addEvent('domain', 'AGENTIC CX', 'ToolCallExecutedEvent — catalogue_search, inventory_check');
-    addEvent('success', 'AGENTIC CX', 'AgentResponseGeneratedEvent — 2 tool calls');
+    await wait(400);
+    addEvent('success', 'AGENTIC CX', 'AgentResponseGeneratedEvent — 2 parallel tool calls');
 
     addStage(`
       <div class="stage-card">
