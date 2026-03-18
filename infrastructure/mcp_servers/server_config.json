@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "catalogue-service": {
+      "command": "python",
+      "args": ["-m", "prism.catalogue.infrastructure.mcp_servers.catalogue_server"]
+    },
+    "intelligence-service": {
+      "command": "python",
+      "args": ["-m", "prism.intelligence.infrastructure.mcp_servers.intelligence_server"]
+    },
+    "discovery-service": {
+      "command": "python",
+      "args": ["-m", "prism.discovery.infrastructure.mcp_servers.discovery_server"]
+    },
+    "tryon-service": {
+      "command": "python",
+      "args": ["-m", "prism.tryon.infrastructure.mcp_servers.tryon_server"]
+    },
+    "commerce-service": {
+      "command": "python",
+      "args": ["-m", "prism.commerce.infrastructure.mcp_servers.commerce_server"]
+    },
+    "payment-service": {
+      "command": "python",
+      "args": ["-m", "prism.payment.infrastructure.mcp_servers.payment_server"]
+    },
+    "agentic-cx-service": {
+      "command": "python",
+      "args": ["-m", "prism.agentic_cx.infrastructure.mcp_servers.agentic_cx_server"]
+    }
+  }
+}
