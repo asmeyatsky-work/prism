@@ -27,9 +27,11 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
+from pathlib import Path
+
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 from prism.catalogue.application.commands.ingest_product import (
@@ -303,6 +305,17 @@ def create_app() -> FastAPI:
 
     def _get_state(request: Request) -> _DemoState:
         return request.app.state.demo  # type: ignore[attr-defined]
+
+    # ------------------------------------------------------------------
+    # Frontend
+    # ------------------------------------------------------------------
+
+    _static_dir = Path(__file__).parent.parent / "static"
+
+    @app.get("/", response_class=HTMLResponse, include_in_schema=False)
+    async def index() -> HTMLResponse:
+        html = (_static_dir / "index.html").read_text()
+        return HTMLResponse(content=html)
 
     # ------------------------------------------------------------------
     # Health

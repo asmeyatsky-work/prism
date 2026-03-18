@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISM — Unified Commerce Intelligence Platform</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface-2: #1e1e1e;
+    --border: #2a2a2a;
+    --text: #e8e4df;
+    --text-muted: #8a8580;
+    --accent: #c9a96e;
+    --accent-dim: #8a7548;
+    --success: #4a9e6e;
+    --error: #c4534a;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,10,0.9);
+  }
+
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+  }
+
+  .logo span { color: var(--text-muted); font-size: 0.7rem; letter-spacing: 0.15em; display: block; font-family: 'Inter', sans-serif; }
+
+  nav { display: flex; gap: 2rem; }
+  nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.3s;
+    padding: 0.5rem 0;
+  }
+  nav a:hover, nav a.active { color: var(--accent); }
+
+  .tenant-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.4rem 1rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Main Layout */
+  main { max-width: 1400px; margin: 0 auto; padding: 2rem 3rem; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+
+  h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Product Grid */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .product-card:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
+
+  .product-card .brand-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .product-card .product-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+  }
+  .product-card .product-cat {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.8rem;
+  }
+  .product-card .product-price {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--accent);
+  }
+  .product-card .product-sku {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+  .product-card .quality-bar {
+    margin-top: 0.8rem;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .product-card .quality-bar .fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s;
+  }
+  .product-card .enrichment-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid;
+    margin-top: 0.5rem;
+  }
+  .enrichment-badge.RAW { border-color: var(--text-muted); color: var(--text-muted); }
+  .enrichment-badge.ENRICHED { border-color: var(--success); color: var(--success); }
+
+  /* Search */
+  .search-container { margin-bottom: 2rem; }
+  .search-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .search-bar input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: 0.02em;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--text-muted); }
+
+  /* Buttons */
+  .btn {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.6rem 1.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s;
+  }
+  .btn:hover { background: var(--accent); color: var(--bg); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.primary { background: var(--accent); color: var(--bg); }
+  .btn.primary:hover { background: var(--accent-dim); }
+  .btn.sm { padding: 0.4rem 0.8rem; font-size: 0.65rem; }
+
+  /* Search Results */
+  .search-results { display: flex; flex-direction: column; gap: 1rem; }
+  .search-result {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.3s;
+  }
+  .search-result:hover { border-color: var(--accent-dim); }
+  .search-result .sr-info h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+  }
+  .search-result .sr-info p { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
+  .search-result .sr-score {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--accent);
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  /* Product Detail Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    max-width: 700px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 2.5rem;
+  }
+  .modal .close-btn {
+    float: right;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modal .detail-brand {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .modal .detail-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  .modal .detail-desc {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    margin: 1rem 0;
+  }
+  .modal .detail-attrs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+    font-size: 0.8rem;
+  }
+  .modal .detail-attrs .attr-label { color: var(--text-muted); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.1em; }
+  .modal .detail-attrs .attr-value { color: var(--text); }
+  .modal .detail-actions { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+
+  /* Agent Chat */
+  .chat-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .chat-messages {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    height: 500px;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .chat-msg {
+    max-width: 80%;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .chat-msg.agent {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    border-radius: 0 12px 12px 12px;
+  }
+  .chat-msg.user {
+    background: var(--accent-dim);
+    color: #fff;
+    align-self: flex-end;
+    border-radius: 12px 0 12px 12px;
+  }
+  .chat-msg .msg-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+  .chat-msg.user .msg-label { color: rgba(255,255,255,0.6); }
+
+  .chat-input {
+    display: flex;
+    border: 1px solid var(--border);
+  }
+  .chat-input input {
+    flex: 1;
+    background: var(--surface);
+    border: none;
+    color: var(--text);
+    padding: 1rem 1.2rem;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+  .chat-input input::placeholder { color: var(--text-muted); }
+  .chat-input button {
+    background: var(--accent);
+    border: none;
+    color: var(--bg);
+    padding: 0 1.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.3s;
+  }
+  .chat-input button:hover { background: var(--accent-dim); }
+
+  .chat-status {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    padding: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Payment */
+  .payment-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    max-width: 500px;
+  }
+  .payment-form .form-row { margin-bottom: 1.2rem; }
+  .payment-form label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+  }
+  .payment-form input, .payment-form select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+  .payment-form input:focus { border-color: var(--accent); }
+
+  .payment-result {
+    margin-top: 1.5rem;
+    padding: 1.2rem;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .payment-result.success { border-color: var(--success); }
+  .payment-result.error { border-color: var(--error); }
+  .payment-result .pr-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .payment-result .pr-value { margin-top: 0.2rem; }
+
+  /* Try-On */
+  .tryon-result {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    max-width: 500px;
+    text-align: center;
+  }
+  .tryon-result .tryon-confidence {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  /* Loading */
+  .loading { color: var(--text-muted); font-size: 0.8rem; font-style: italic; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat { text-align: center; }
+  .stat .stat-value { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--accent); font-weight: 300; }
+  .stat .stat-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">PRISM<span>Unified Commerce Intelligence</span></div>
+  <nav>
+    <a class="active" onclick="showSection('catalogue')">Catalogue</a>
+    <a onclick="showSection('search')">Discovery</a>
+    <a onclick="showSection('tryon')">Try-On</a>
+    <a onclick="showSection('stylist')">Stylist</a>
+    <a onclick="showSection('payment')">Payment</a>
+  </nav>
+  <select class="tenant-select" id="tenantSelect" onchange="switchTenant()">
+    <option value="gucci">Gucci</option>
+    <option value="louis-vuitton">Louis Vuitton</option>
+    <option value="burberry">Burberry</option>
+  </select>
+</header>
+
+<main>
+  <!-- CATALOGUE -->
+  <div class="section active" id="sec-catalogue">
+    <h2>Catalogue Intelligence</h2>
+    <div class="stats-bar" id="statsBar"></div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+
+  <!-- DISCOVERY -->
+  <div class="section" id="sec-search">
+    <h2>Multimodal Discovery</h2>
+    <div class="search-container">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="A black evening bag for a winter gala..." onkeydown="if(event.key==='Enter')doSearch()">
+        <button class="btn" onclick="doSearch()">Search</button>
+      </div>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <!-- TRY-ON -->
+  <div class="section" id="sec-tryon">
+    <h2>Virtual Try-On</h2>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem;font-size:0.85rem;">Select a product from the catalogue, then try it on virtually.</p>
+    <div style="display:flex;gap:1rem;margin-bottom:1.5rem;align-items:center;">
+      <select id="tryonProductSelect" class="tenant-select" style="flex:1;max-width:400px;"></select>
+      <button class="btn" onclick="doTryOn()">Try On</button>
+    </div>
+    <div id="tryonResult"></div>
+  </div>
+
+  <!-- STYLIST -->
+  <div class="section" id="sec-stylist">
+    <h2>Personal Stylist</h2>
+    <div class="chat-container">
+      <div class="chat-status" id="chatStatus">Start a conversation with your AI stylist</div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg agent">
+          <div class="msg-label">Aria — Personal Stylist</div>
+          Welcome to the PRISM personal styling experience. I'm Aria, your dedicated stylist. How may I assist you today?
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="I need a dress for a winter gala in Milan..." onkeydown="if(event.key==='Enter')sendMessage()">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT -->
+  <div class="section" id="sec-payment">
+    <h2>Payment Orchestration</h2>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem;font-size:0.85rem;">FlowRoute&trade; — Intelligent multi-PSP routing with FX optimisation</p>
+    <div class="payment-form">
+      <div class="form-row">
+        <label>Amount (EUR)</label>
+        <input type="number" id="payAmount" value="2450.00" step="0.01">
+      </div>
+      <div class="form-row">
+        <label>Currency</label>
+        <select id="payCurrency">
+          <option value="EUR">EUR</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="CHF">CHF</option><option value="JPY">JPY</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Card</label>
+        <input type="text" id="payCard" value="**** **** **** 4242" disabled>
+      </div>
+      <button class="btn primary" onclick="doPayment()" style="width:100%">Process Payment</button>
+      <div id="paymentResult"></div>
+    </div>
+  </div>
+</main>
+
+<!-- Product Detail Modal -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal()">&times;</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let tenant = 'gucci';
+let conversationId = null;
+let products = [];
+
+// --- Navigation ---
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  event.target.classList.add('active');
+  if (name === 'tryon') populateTryonSelect();
+}
+
+function switchTenant() {
+  tenant = document.getElementById('tenantSelect').value;
+  loadCatalogue();
+}
+
+// --- API helper ---
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': tenant } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + path, opts);
+  return r.json();
+}
+
+// --- Catalogue ---
+async function loadCatalogue() {
+  const data = await api('GET', '/api/catalogue/products?limit=50');
+  products = data.products || [];
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = products.map(p => `
+    <div class="product-card" onclick="openProduct('${p.id}')">
+      <div class="product-sku">${p.sku}</div>
+      <div class="brand-tag">${p.brand}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-cat">${p.category}${p.subcategory ? ' / ' + p.subcategory : ''}</div>
+      <div class="product-price">&euro;${p.price_amount ? p.price_amount.toLocaleString() : '—'}</div>
+      <span class="enrichment-badge ${p.enrichment_status}">${p.enrichment_status}</span>
+      <div class="quality-bar"><div class="fill" style="width:${(p.quality_score||0)*100}%"></div></div>
+    </div>
+  `).join('');
+
+  // Stats
+  const health = await api('GET', '/api/health');
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat"><div class="stat-value">${data.total_count}</div><div class="stat-label">${tenant} Products</div></div>
+    <div class="stat"><div class="stat-value">${health.catalogue_size}</div><div class="stat-label">Total Catalogue</div></div>
+    <div class="stat"><div class="stat-value">${health.tenants.length}</div><div class="stat-label">Brand Tenants</div></div>
+    <div class="stat"><div class="stat-value">7</div><div class="stat-label">Active MCP Servers</div></div>
+  `;
+}
+
+async function openProduct(id) {
+  const p = await api('GET', `/api/catalogue/products/${id}`);
+  const attrs = p.attributes || {};
+  document.getElementById('modalContent').innerHTML = `
+    <div class="detail-brand">${p.brand}</div>
+    <div class="detail-name">${p.name}</div>
+    <div style="color:var(--accent);font-size:1.2rem;margin:0.5rem 0">&euro;${p.price_amount ? p.price_amount.toLocaleString() : '—'}</div>
+    <div class="detail-desc">${p.description || 'No description yet.'}</div>
+    <div class="detail-attrs">
+      ${Object.entries(attrs).map(([k,v]) => `<div><div class="attr-label">${k}</div><div class="attr-value">${v}</div></div>`).join('')}
+    </div>
+    <div style="font-size:0.7rem;color:var(--text-muted);margin:1rem 0">
+      SKU: ${p.sku} &nbsp;|&nbsp; Quality: ${((p.quality_score||0)*100).toFixed(0)}% &nbsp;|&nbsp; Status: ${p.enrichment_status}
+    </div>
+    <div class="detail-actions">
+      <button class="btn sm" onclick="enrichProduct('${p.id}')">Enrich with AI</button>
+      <button class="btn sm" onclick="closeModal();showSection('tryon');document.getElementById('tryonProductSelect').value='${p.id}'">Virtual Try-On</button>
+    </div>
+  `;
+  document.getElementById('productModal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('productModal').classList.remove('open'); }
+
+async function enrichProduct(id) {
+  const el = event.target;
+  el.textContent = 'Enriching...';
+  el.disabled = true;
+  const r = await api('POST', `/api/intelligence/enrich/${id}`);
+  el.textContent = 'Enriched!';
+  setTimeout(() => { closeModal(); loadCatalogue(); }, 800);
+}
+
+// --- Discovery ---
+async function doSearch() {
+  const query = document.getElementById('searchInput').value;
+  if (!query) return;
+  document.getElementById('searchResults').innerHTML = '<div class="loading">Searching across multimodal embeddings...</div>';
+  const data = await api('POST', '/api/discovery/search', { query_text: query, top_k: 8 });
+  const results = data.results || [];
+  document.getElementById('searchResults').innerHTML = results.length ? results.map(r => `
+    <div class="search-result" ${r.product ? `onclick="openProduct('${r.product.id}')"` : ''}>
+      <div class="sr-info">
+        <h4>${r.product ? r.product.name : r.product_id}</h4>
+        <p>${r.explanation || ''}</p>
+        ${r.product ? `<p style="color:var(--accent)">&euro;${r.product.price_amount ? r.product.price_amount.toLocaleString() : '—'} &nbsp; ${r.product.brand || ''}</p>` : ''}
+      </div>
+      <div class="sr-score">${(r.score * 100).toFixed(0)}</div>
+    </div>
+  `).join('') : '<div class="loading">No results found.</div>';
+}
+
+// --- Try-On ---
+function populateTryonSelect() {
+  const sel = document.getElementById('tryonProductSelect');
+  sel.innerHTML = products.map(p => `<option value="${p.id}">${p.brand} — ${p.name}</option>`).join('');
+}
+
+async function doTryOn() {
+  const pid = document.getElementById('tryonProductSelect').value;
+  if (!pid) return;
+  document.getElementById('tryonResult').innerHTML = '<div class="loading">Processing virtual try-on...</div>';
+  const r = await api('POST', '/api/tryon/process', { product_id: pid });
+  document.getElementById('tryonResult').innerHTML = `
+    <div class="tryon-result">
+      <div class="tryon-confidence">${(r.confidence * 100).toFixed(1)}%</div>
+      <div style="font-size:0.7rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin:0.5rem 0">Confidence Score</div>
+      <h3 style="margin:1rem 0">${r.product_name}</h3>
+      <p style="color:var(--text-muted);font-size:0.85rem">${r.product_brand}</p>
+      <p style="color:var(--text-muted);font-size:0.75rem;margin-top:1rem">Processing time: ${r.processing_time_ms}ms &nbsp;|&nbsp; Budget: ${r.within_latency_budget ? 'Within P95' : 'Exceeded'}</p>
+      <p style="font-size:0.7rem;color:var(--text-muted);margin-top:0.5rem;word-break:break-all">${r.result_image_url}</p>
+    </div>
+  `;
+}
+
+// --- Stylist Chat ---
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  const chatEl = document.getElementById('chatMessages');
+  chatEl.innerHTML += `<div class="chat-msg user"><div class="msg-label">You</div>${escapeHtml(msg)}</div>`;
+  chatEl.scrollTop = chatEl.scrollHeight;
+
+  document.getElementById('chatStatus').textContent = 'Aria is thinking...';
+
+  try {
+    if (!conversationId) {
+      const conv = await api('POST', '/api/agent/conversation', { agent_type: 'PERSONAL_STYLIST', channel: 'WEB', customer_id: 'isabella_chen' });
+      conversationId = conv.conversation_id;
+    }
+
+    const r = await api('POST', `/api/agent/conversation/${conversationId}/message`, { message: msg });
+    const reply = r.agent_response || r.response_content || JSON.stringify(r);
+    chatEl.innerHTML += `<div class="chat-msg agent"><div class="msg-label">Aria — Personal Stylist</div>${escapeHtml(reply)}</div>`;
+    document.getElementById('chatStatus').textContent = `Conversation: ${conversationId.slice(0,8)}...`;
+  } catch(e) {
+    chatEl.innerHTML += `<div class="chat-msg agent"><div class="msg-label">System</div>Sorry, something went wrong. Please try again.</div>`;
+    document.getElementById('chatStatus').textContent = 'Error — try again';
+  }
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+// --- Payment ---
+async function doPayment() {
+  const amt = parseFloat(document.getElementById('payAmount').value);
+  const cur = document.getElementById('payCurrency').value;
+  document.getElementById('paymentResult').innerHTML = '<div class="loading" style="margin-top:1rem">Processing via FlowRoute...</div>';
+
+  const r = await api('POST', '/api/payment/process', { amount: amt, currency: cur, customer_currency: cur, settlement_currency: 'EUR' });
+
+  if (r.success) {
+    document.getElementById('paymentResult').innerHTML = `
+      <div class="payment-result success">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <div><div class="pr-label">Status</div><div class="pr-value" style="color:var(--success);font-size:1.1rem">${r.status}</div></div>
+          <div style="text-align:right"><div class="pr-label">Amount</div><div class="pr-value" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem">${cur} ${amt.toLocaleString()}</div></div>
+        </div>
+        <div class="pr-label">PSP</div><div class="pr-value">${r.psp_id}</div>
+        <div class="pr-label" style="margin-top:0.5rem">Transaction ID</div><div class="pr-value" style="font-size:0.8rem;color:var(--text-muted)">${r.psp_transaction_id}</div>
+      </div>`;
+  } else {
+    document.getElementById('paymentResult').innerHTML = `
+      <div class="payment-result error">
+        <div class="pr-label">Payment Failed</div>
+        <div class="pr-value" style="color:var(--error)">${r.error || 'Unknown error'}</div>
+      </div>`;
+  }
+}
+
+function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Click outside modal to close
+document.getElementById('productModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+// Init
+loadCatalogue();
+</script>
+</body>
+</html>
