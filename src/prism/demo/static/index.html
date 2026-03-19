@@ -303,33 +303,35 @@ function scrollMain(){document.getElementById('mainPanel').scrollTo({top:999999,
 // ─── Typewriter ───
 async function typewrite(elId,text,speed=18){const el=document.getElementById(elId);if(!el)return;el.innerHTML='<span class="typing-cursor"></span>';for(let i=0;i<text.length;i++){el.innerHTML=esc(text.slice(0,i+1))+'<span class="typing-cursor"></span>';if(i%4===0){await wait(speed);scrollMain();}}el.innerHTML=esc(text);}
 
-// ─── Product images (Unsplash) ───
+// ─── Product images (proxied through our server) ───
+function proxyImg(url){return '/api/img?url='+encodeURIComponent(url);}
 const PRODUCT_IMAGES={
-  'GUCCI-BAG-001':'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=500&fit=crop&q=80',
-  'GUCCI-BAG-002':'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=500&fit=crop&q=80',
-  'GUCCI-RTW-001':'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop&q=80',
-  'GUCCI-SHO-001':'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=500&fit=crop&q=80',
-  'GUCCI-ACC-001':'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=400&h=500&fit=crop&q=80',
-  'LV-BAG-001':'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=500&fit=crop&q=80',
-  'LV-BAG-002':'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=400&h=500&fit=crop&q=80',
-  'LV-SHO-001':'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400&h=500&fit=crop&q=80',
-  'LV-ACC-001':'https://images.unsplash.com/photo-1601924994987-69e26d50dc64?w=400&h=500&fit=crop&q=80',
-  'LV-BAG-003':'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=500&fit=crop&q=80',
-  'BURB-OW-001':'https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?w=400&h=500&fit=crop&q=80',
-  'BURB-BAG-001':'https://images.unsplash.com/photo-1611923134239-b9be5816e23e?w=400&h=500&fit=crop&q=80',
-  'BURB-ACC-001':'https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=400&h=500&fit=crop&q=80',
-  'BURB-BAG-002':'https://images.unsplash.com/photo-1614179689702-355944cd0918?w=400&h=500&fit=crop&q=80',
-  'BURB-RTW-001':'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=500&fit=crop&q=80',
+  'GUCCI-BAG-001':proxyImg('https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=500&fit=crop&q=80'),
+  'GUCCI-BAG-002':proxyImg('https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=500&fit=crop&q=80'),
+  'GUCCI-RTW-001':proxyImg('https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop&q=80'),
+  'GUCCI-SHO-001':proxyImg('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=500&fit=crop&q=80'),
+  'GUCCI-ACC-001':proxyImg('https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=400&h=500&fit=crop&q=80'),
+  'LV-BAG-001':proxyImg('https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=500&fit=crop&q=80'),
+  'LV-BAG-002':proxyImg('https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=400&h=500&fit=crop&q=80'),
+  'LV-SHO-001':proxyImg('https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400&h=500&fit=crop&q=80'),
+  'LV-ACC-001':proxyImg('https://images.unsplash.com/photo-1601924994987-69e26d50dc64?w=400&h=500&fit=crop&q=80'),
+  'LV-BAG-003':proxyImg('https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=500&fit=crop&q=80'),
+  'BURB-OW-001':proxyImg('https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?w=400&h=500&fit=crop&q=80'),
+  'BURB-BAG-001':proxyImg('https://images.unsplash.com/photo-1611923134239-b9be5816e23e?w=400&h=500&fit=crop&q=80'),
+  'BURB-ACC-001':proxyImg('https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=400&h=500&fit=crop&q=80'),
+  'BURB-BAG-002':proxyImg('https://images.unsplash.com/photo-1614179689702-355944cd0918?w=400&h=500&fit=crop&q=80'),
+  'BURB-RTW-001':proxyImg('https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=500&fit=crop&q=80'),
 };
 const FALLBACK_IMAGES=[
-  'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=500&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=500&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=500&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&h=500&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&h=500&fit=crop&q=80',
+  proxyImg('https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=500&fit=crop&q=80'),
+  proxyImg('https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=500&fit=crop&q=80'),
+  proxyImg('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=500&fit=crop&q=80'),
+  proxyImg('https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&h=500&fit=crop&q=80'),
+  proxyImg('https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&h=500&fit=crop&q=80'),
 ];
 function getProductImage(sku,i){return PRODUCT_IMAGES[sku]||FALLBACK_IMAGES[i%FALLBACK_IMAGES.length];}
-function pCard(p,i){const img=getProductImage(p.sku,i);return `<div class="mini-product"><div class="mp-img"><img src="${img}" alt="${esc(p.name)}" loading="lazy"></div><div class="mp-info"><div class="mp-brand">${esc(p.brand)}</div><div class="mp-name">${esc(p.name)}</div><div class="mp-price">&euro;${p.price_amount?p.price_amount.toLocaleString():'—'}</div><div class="mp-meta">${p.sku} · Quality: ${((p.quality_score||0)*100).toFixed(0)}%</div></div></div>`;}
+function imgError(el){el.onerror=null;el.style.display='none';el.parentElement.style.background='linear-gradient(135deg,#667eea 0%,#764ba2 100%)';el.parentElement.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:14px;opacity:.7">No image</div>';}
+function pCard(p,i){const img=getProductImage(p.sku,i);return `<div class="mini-product"><div class="mp-img"><img src="${img}" alt="${esc(p.name)}" loading="lazy" onerror="imgError(this)"></div><div class="mp-info"><div class="mp-brand">${esc(p.brand)}</div><div class="mp-name">${esc(p.name)}</div><div class="mp-price">&euro;${p.price_amount?p.price_amount.toLocaleString():'—'}</div><div class="mp-meta">${p.sku} · Quality: ${((p.quality_score||0)*100).toFixed(0)}%</div></div></div>`;}
 
 // ─── Wait for user to press Continue ───
 function waitForContinue(label='Continue to Next Step'){

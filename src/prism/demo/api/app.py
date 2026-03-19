@@ -29,9 +29,12 @@ from uuid import uuid4
 
 from pathlib import Path
 
-from fastapi import FastAPI, Header, HTTPException, Request
+import hashlib
+
+import httpx
+from fastapi import FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from prism.catalogue.application.commands.ingest_product import (
@@ -316,6 +319,35 @@ def create_app() -> FastAPI:
     async def index() -> HTMLResponse:
         html = (_static_dir / "index.html").read_text()
         return HTMLResponse(content=html)
+
+    # ------------------------------------------------------------------
+    # Image proxy — serves external images through our own domain so
+    # they load reliably regardless of client-side network restrictions.
+    # ------------------------------------------------------------------
+
+    _img_cache: dict[str, tuple[bytes, str]] = {}
+
+    @app.get("/api/img", include_in_schema=False)
+    async def proxy_image(url: str = Query(...)) -> Response:
+        if not url.startswith("https://images.unsplash.com/"):
+            raise HTTPException(status_code=400, detail="Only Unsplash URLs allowed")
+
+        cache_key = hashlib.sha256(url.encode()).hexdigest()
+        if cache_key in _img_cache:
+            body, ct = _img_cache[cache_key]
+            return Response(content=body, media_type=ct, headers={"Cache-Control": "public, max-age=86400"})
+
+        async with httpx.AsyncClient(timeout=10) as client:
+            try:
+                resp = await client.get(url)
+                resp.raise_for_status()
+            except httpx.HTTPError:
+                raise HTTPException(status_code=502, detail="Failed to fetch image")
+
+        body = resp.content
+        ct = resp.headers.get("content-type", "image/jpeg")
+        _img_cache[cache_key] = (body, ct)
+        return Response(content=body, media_type=ct, headers={"Cache-Control": "public, max-age=86400"})
 
     # ------------------------------------------------------------------
     # Health
