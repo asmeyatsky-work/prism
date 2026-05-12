@@ -42,6 +42,22 @@ from prism.catalogue.application.commands.ingest_product import (
     IngestProductUseCase,
 )
 from prism.catalogue.application.dtos.product_dto import ProductDTO, ProductSummaryDTO
+from prism.commerce.application.commands.process_ucp_event import (
+    ProcessUCPEventUseCase,
+)
+from prism.commerce.domain.services.event_processing_service import (
+    EventProcessingService,
+)
+from prism.commerce.infrastructure.adapters.ucp_http_adapter import (
+    UCPHttpAdapter,
+    ucp_http_enabled,
+)
+from prism.demo.mocks.commerce_mocks import (
+    MockGoogleShopping,
+    MockInventory,
+    MockUCPInbound,
+    MockUCPOutbound,
+)
 from prism.shared.infrastructure.event_bus import InMemoryEventBus
 from prism.shared.infrastructure.audit_sinks import InMemoryAuditSink
 from prism.shared.infrastructure.observability import (
@@ -210,6 +226,37 @@ class _DemoState:
         self.fx_provider = MockFXRate()
         self.routing_repo = MockRoutingRuleRepository()
         self.payment_repo = InMemoryPaymentRepository()
+
+        # --- Commerce / UCP context ---
+        # Inbound: HTTP adapter when feature flag on, mock otherwise.
+        if ucp_http_enabled():
+            try:
+                self._ucp_http: UCPHttpAdapter | None = UCPHttpAdapter.from_env()
+                self.ucp_inbound: Any = self._ucp_http
+                self.ucp_outbound: Any = self._ucp_http
+                logger.info("UCP HTTP adapter enabled (PRISM_UCP_HTTP_ENABLED=1).")
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "UCP HTTP adapter requested but failed to initialise (%s); "
+                    "falling back to in-memory mocks.",
+                    exc,
+                )
+                self._ucp_http = None
+                self.ucp_inbound = MockUCPInbound()
+                self.ucp_outbound = MockUCPOutbound()
+        else:
+            self._ucp_http = None
+            self.ucp_inbound = MockUCPInbound()
+            self.ucp_outbound = MockUCPOutbound()
+
+        self.google_shopping = MockGoogleShopping()
+        self.inventory = MockInventory()
+        self.commerce_event_service = EventProcessingService()
+        self.process_ucp_event = ProcessUCPEventUseCase(
+            ucp_inbound_port=self.ucp_inbound,
+            event_processing_service=self.commerce_event_service,
+            event_bus=self.event_bus,
+        )
 
         # --- Agentic CX context ---
         self.conversation_repo = InMemoryConversationRepository()
@@ -442,11 +489,25 @@ def create_app() -> FastAPI:
                         correlation_id=current_correlation_id(),
                     )
                 )
+                # Outbound UCP fan-out: best-effort push of the freshly
+                # ingested product to UCP's catalogue. Failures don't block
+                # the ingest response — they're audited and surfaced in the
+                # per-product result.
+                ucp_pushed = await s.ucp_outbound.push_enriched_product({
+                    "id": result.value.id,
+                    "sku": product_data["sku"],
+                    "tenant_id": tenant,
+                    "name": product_data.get("name", ""),
+                    "brand": product_data.get("brand", ""),
+                    "quality_score": result.value.quality_score,
+                    "status": "RAW",
+                })
                 results.append({
                     "sku": product_data["sku"],
                     "success": True,
                     "product_id": result.value.id,
                     "quality_score": result.value.quality_score,
+                    "ucp_pushed": ucp_pushed,
                 })
             else:
                 results.append({
@@ -463,6 +524,112 @@ def create_app() -> FastAPI:
                 "results": results,
             },
             status_code=200,
+        )
+
+    # ------------------------------------------------------------------
+    # Commerce / UCP — Inbound events
+    # ------------------------------------------------------------------
+
+    @app.post(
+        "/api/commerce/ucp/events",
+        tags=["Commerce / UCP"],
+        summary="Receive an inbound UCP event (HTTP or Pub/Sub-mirrored)",
+    )
+    async def receive_ucp_event(
+        request: Request,
+        body: dict[str, Any],
+        x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    ) -> JSONResponse:
+        s = _get_state(request)
+        tenant = _tenant_id(x_tenant_id)
+
+        # Body shape mirrors Pub/Sub message:
+        #   { "event_id": "...", "event_type": "product.updated",
+        #     "source": "<tenant>", "payload": { ... } }
+        body.setdefault("source", tenant)
+        result = await s.process_ucp_event.execute(body)
+
+        if not result.success or result.value is None:
+            return JSONResponse(
+                status_code=422,
+                content={
+                    "success": False,
+                    "code": result.error_code,
+                    "error": result.error,
+                },
+            )
+
+        await app.state.audit.record(  # type: ignore[attr-defined]
+            AuditEvent.for_change(
+                actor=f"ucp:{tenant}",
+                action="commerce.ucp.event_received",
+                aggregate_type="CommerceEvent",
+                aggregate_id=result.value.id,
+                tenant_id=tenant,
+                before=None,
+                after={
+                    "event_type": result.value.event_type.value,
+                    "status": result.value.processing_status.value,
+                },
+                correlation_id=current_correlation_id(),
+            )
+        )
+
+        return JSONResponse(
+            status_code=202,
+            content={
+                "success": True,
+                "commerce_event_id": result.value.id,
+                "event_type": result.value.event_type.value,
+                "status": result.value.processing_status.value,
+                "transport": "http"
+                if app.state.demo._ucp_http is not None  # type: ignore[attr-defined]
+                else "mock",
+            },
+        )
+
+    @app.post(
+        "/api/commerce/ucp/sync/{product_id}",
+        tags=["Commerce / UCP"],
+        summary="Push an enriched product back to UCP",
+    )
+    async def push_to_ucp(
+        request: Request,
+        product_id: str,
+        x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    ) -> JSONResponse:
+        s = _get_state(request)
+        tenant = _tenant_id(x_tenant_id)
+        product = s.product_repo.get_by_id_any_tenant(product_id)
+        if product is None:
+            raise HTTPException(status_code=404, detail="Product not found")
+        pushed = await s.ucp_outbound.push_enriched_product({
+            "id": product.id,
+            "sku": product.sku,
+            "tenant_id": tenant,
+            "name": product.name,
+            "brand": product.brand,
+            "quality_score": product.quality_score,
+            "status": product.enrichment_status.value,
+        })
+        return JSONResponse(
+            content={"product_id": product_id, "pushed": pushed},
+            status_code=200 if pushed else 502,
+        )
+
+    @app.get(
+        "/api/commerce/ucp/status",
+        tags=["Commerce / UCP"],
+        summary="UCP integration status (transport + feature flag)",
+    )
+    async def ucp_status(request: Request) -> JSONResponse:
+        s = _get_state(request)
+        return JSONResponse(
+            content={
+                "http_enabled": ucp_http_enabled(),
+                "transport": "http" if s._ucp_http is not None else "mock",
+                "pubsub_supported": True,
+            }
         )
 
     # ------------------------------------------------------------------

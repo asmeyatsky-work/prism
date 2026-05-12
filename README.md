@@ -244,6 +244,44 @@ Push to main → Build Docker image → Push to Artifact Registry → Deploy to 
 
 ---
 
+## UCP integration
+
+PRISM connects to the Unified Commerce Protocol through **three layered
+adapters** behind a single pair of domain ports (`UCPInboundPort`,
+`UCPOutboundPort`). Selection is runtime config — domain code never
+changes. ADR: [`0006-ucp-integration.md`](docs/decisions/0006-ucp-integration.md).
+
+| Layer            | Module                                                                       | Active when                              |
+|------------------|-------------------------------------------------------------------------------|------------------------------------------|
+| Mock (default)   | `prism.demo.mocks.commerce_mocks`                                            | feature flag off — local & demo          |
+| HTTP             | `prism.commerce.infrastructure.adapters.ucp_http_adapter.UCPHttpAdapter`     | `PRISM_UCP_HTTP_ENABLED=1`               |
+| Pub/Sub pull     | `prism.commerce.infrastructure.connectors.ucp_pubsub_subscriber`             | started from `bootstrap.py` in prod      |
+
+Demo API surface:
+
+| Method | Path                                    | Purpose                                          |
+|--------|-----------------------------------------|--------------------------------------------------|
+| `POST` | `/api/commerce/ucp/events`              | Receive a UCP event (HTTP or Pub/Sub-mirrored shape) |
+| `POST` | `/api/commerce/ucp/sync/{product_id}`   | Push an enriched product back to UCP             |
+| `GET`  | `/api/commerce/ucp/status`              | Report active transport + feature-flag state     |
+
+Catalogue ingest fans out to UCP automatically: every successful
+`POST /api/catalogue/ingest` triggers `UCPOutboundPort.push_enriched_product`
+and surfaces the result as `ucp_pushed` on each row. Every inbound UCP
+event emits a tenant-scoped `commerce.ucp.event_received` audit row.
+
+Environment variables (all loaded via Secret Manager in production):
+
+```
+PRISM_UCP_HTTP_ENABLED=1
+PRISM_UCP_BASE_URL=https://ucp.example.com/api/v1
+PRISM_UCP_API_KEY=...               # Secret Manager
+PRISM_GCP_PROJECT_ID=boreal-gravity-490707-i2
+PRISM_UCP_SUBSCRIPTION_ID=prism-ucp-events
+```
+
+---
+
 ## Architectural Rules — 2026 Compliance
 
 PRISM is built to the `Architectural Rules — 2026.md` standard. Each rule

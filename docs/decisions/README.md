@@ -20,3 +20,4 @@ Index:
 | 0003 | Tenant-id rollout across MCP tool surfaces     | Accepted |
 | 0004 | Audit sink: structured logs → Cloud Logging    | Accepted |
 | 0005 | Observability: contextvar correlation IDs      | Accepted |
+| 0006 | UCP integration: three-layer adapter strategy  | Accepted |
