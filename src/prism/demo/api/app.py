@@ -43,6 +43,17 @@ from prism.catalogue.application.commands.ingest_product import (
 )
 from prism.catalogue.application.dtos.product_dto import ProductDTO, ProductSummaryDTO
 from prism.shared.infrastructure.event_bus import InMemoryEventBus
+from prism.shared.infrastructure.audit_sinks import InMemoryAuditSink
+from prism.shared.infrastructure.observability import (
+    InMemoryMetrics,
+    configure_logging,
+    current_correlation_id,
+    set_correlation_id,
+)
+from prism.gateway.infrastructure.middleware.observability_middleware import (
+    ObservabilityMiddleware,
+)
+from prism.shared.domain.audit import AuditEvent
 
 from prism.demo.mocks.catalogue_mocks import InMemoryProductRepository
 from prism.demo.mocks.discovery_mocks import (
@@ -281,6 +292,17 @@ def create_app() -> FastAPI:
     app.state.demo = state  # type: ignore[attr-defined]
     app.state._seeded = False  # type: ignore[attr-defined]
 
+    configure_logging()
+    metrics = InMemoryMetrics()
+    audit_sink = InMemoryAuditSink()
+    app.state.metrics = metrics  # type: ignore[attr-defined]
+    app.state.audit = audit_sink  # type: ignore[attr-defined]
+    _obs = ObservabilityMiddleware(metrics=metrics)
+
+    @app.middleware("http")
+    async def _observability(request: Request, call_next):
+        return await _obs(request, call_next)
+
     @app.middleware("http")
     async def _lazy_seed(request: Request, call_next):
         """Seed on first request if lifespan hasn't run (e.g. httpx test client)."""
@@ -408,6 +430,18 @@ def create_app() -> FastAPI:
 
             result = await s.ingest_use_case.execute(command)
             if result.success and result.value is not None:
+                await app.state.audit.record(  # type: ignore[attr-defined]
+                    AuditEvent.for_change(
+                        actor=f"api:{tenant}",
+                        action="catalogue.ingest_product",
+                        aggregate_type="Product",
+                        aggregate_id=result.value.id,
+                        tenant_id=tenant,
+                        before=None,
+                        after={"sku": product_data["sku"], "status": "RAW"},
+                        correlation_id=current_correlation_id(),
+                    )
+                )
                 results.append({
                     "sku": product_data["sku"],
                     "success": True,

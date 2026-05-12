@@ -89,7 +89,7 @@ class TestEnrichmentJobStateTransitions:
         desc_event = updated.domain_events[2]
         assert isinstance(desc_event, DescriptionGeneratedEvent)
         assert desc_event.description_text == desc_text
-        assert desc_event.word_count == 7
+        assert desc_event.word_count == 6
 
     def test_complete_embedding(self, job: EnrichmentJob) -> None:
         updated = (

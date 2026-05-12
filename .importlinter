@@ -1,0 +1,70 @@
+[importlinter]
+root_packages =
+    prism
+
+# ---------------------------------------------------------------------------
+# Contract 1: Hexagonal layer direction (Rules §2)
+#   domain ← application ← infrastructure
+#                       ← presentation
+# Domain imports nothing from outer layers.
+# Application imports only domain.
+# Infrastructure may import domain + application (to wire adapters).
+# Presentation may import domain + application.
+# ---------------------------------------------------------------------------
+[importlinter:contract:layers]
+name = Hexagonal layer direction
+type = layers
+layers =
+    prism.*.presentation
+    prism.*.infrastructure
+    prism.*.application
+    prism.*.domain
+containers =
+    prism
+ignore_imports =
+    prism.demo.** -> prism.**
+
+# ---------------------------------------------------------------------------
+# Contract 2: Domain purity — no SDKs, frameworks, or infra libs
+# ---------------------------------------------------------------------------
+[importlinter:contract:domain-purity]
+name = Domain layers forbid SDKs and frameworks
+type = forbidden
+source_modules =
+    prism.catalogue.domain
+    prism.commerce.domain
+    prism.discovery.domain
+    prism.intelligence.domain
+    prism.tryon.domain
+    prism.payment.domain
+    prism.agentic_cx.domain
+    prism.gateway.domain
+    prism.shared.domain
+forbidden_modules =
+    fastapi
+    httpx
+    redis
+    google
+    google.cloud
+    pydantic
+    uvicorn
+    structlog
+    opentelemetry
+
+# ---------------------------------------------------------------------------
+# Contract 3: Bounded-context isolation — contexts talk via shared kernel only
+# ---------------------------------------------------------------------------
+[importlinter:contract:bounded-contexts]
+name = Bounded contexts do not import each other directly
+type = independence
+modules =
+    prism.catalogue
+    prism.commerce
+    prism.discovery
+    prism.intelligence
+    prism.tryon
+    prism.payment
+    prism.agentic_cx
+    prism.gateway
+ignore_imports =
+    prism.demo.** -> prism.**

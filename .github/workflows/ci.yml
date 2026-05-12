@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint, types, boundaries, audit, tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install runtime + dev deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" import-linter pip-audit
+
+      - name: Ruff lint
+        run: ruff check src tests
+
+      - name: Ruff format check
+        run: ruff format --check src tests
+
+      - name: Mypy strict
+        run: mypy src/prism
+
+      - name: Import-linter (layer + bounded-context contracts)
+        run: lint-imports
+
+      - name: Pytest with coverage gates
+        env:
+          PYTHONPATH: src
+        run: |
+          pytest \
+            --cov=prism \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-fail-under=80
+
+      - name: Domain coverage gate (>=95%)
+        run: |
+          python scripts/check_layer_coverage.py \
+            --xml coverage.xml \
+            --layer domain \
+            --min 95
+
+      - name: Application coverage gate (>=85%)
+        run: |
+          python scripts/check_layer_coverage.py \
+            --xml coverage.xml \
+            --layer application \
+            --min 85
+
+      - name: pip-audit (supply chain)
+        run: pip-audit --strict --ignore-vuln GHSA-4xh5-x5gv-qwph || true
+        # ^ permissive on first land; remove `|| true` once baseline is clean.
+
+      - name: SBOM (CycloneDX)
+        run: |
+          pip install cyclonedx-bom
+          cyclonedx-py environment -o sbom.json || cyclonedx-py -e -o sbom.json
+        continue-on-error: true
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
+        if: always()

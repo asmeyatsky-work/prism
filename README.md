@@ -244,4 +244,37 @@ Push to main → Build Docker image → Push to Artifact Registry → Deploy to 
 
 ---
 
+## Architectural Rules — 2026 Compliance
+
+PRISM is built to the `Architectural Rules — 2026.md` standard. Each rule
+section maps to a concrete enforcement mechanism in the repo — *not just a
+convention*. Per Rules §2: "Rule not in CI = rule not real."
+
+| Rules § | Obligation | How PRISM enforces it |
+|--------|------------|-----------------------|
+| §1 | Canonical stack (Python 3.12, FastAPI, GCP, MCP) | `pyproject.toml`; ADR [0001](docs/decisions/0001-canonical-stack.md) for the all-Python v0.1 choice. |
+| §2 | Layer direction (`domain ← application ← infrastructure ← presentation`) | `.importlinter` contract `layers`, run as `lint-imports` in `.github/workflows/ci.yml`. |
+| §2 | Domain SDK-free | `.importlinter` contract `domain-purity` forbids `fastapi`, `httpx`, `google.*`, `pydantic`, etc. from every domain module. |
+| §3 | Bounded-context isolation | `.importlinter` contract `bounded-contexts` (`independence` rule) blocks cross-context imports — they must go through the shared kernel. |
+| §3 | Immutable aggregates, invariants in factories | `@dataclass(frozen=True)` everywhere; `__post_init__` invariants; `Product.create(...)`, `Payment.create(...)` factories. |
+| §3 | One MCP server per bounded context | `src/prism/<context>/infrastructure/mcp_servers/<context>_server.py` × 7. Round-trip tested by `tests/mcp/test_mcp_schema_round_trip.py`. |
+| §4 | No secrets in repo | No literal secrets; Cloud Run injects via Secret Manager + Workload Identity. |
+| §4 | Input validation at boundaries | Pydantic models on every gateway endpoint and DTO. |
+| §4 | Audit event on every write (actor, action, before/after hash, append-only, separate IAM) | `prism.shared.domain.audit.AuditSinkPort` + `InMemoryAuditSink` / `StructlogAuditSink` (Cloud Logging → BigQuery with deny-delete IAM). ADR [0004](docs/decisions/0004-audit-sink.md). |
+| §4 | Timeouts + circuit breaker on external calls | `httpx` timeouts in every adapter; circuit-breaker scoped per context. |
+| §4 | AI output validated against explicit schema | Pydantic schemas on every AI adapter output (`intelligence`, `tryon`, `agentic_cx`). |
+| §4 | Supply chain — lockfile, dep scan, SBOM | `requirements.lock` (pip-tools); `pip-audit` + CycloneDX SBOM in CI. ADR [0002](docs/decisions/0002-pinned-lockfile.md). |
+| §5 | Coverage floors (domain ≥95%, application ≥85%, overall ≥80%) | `pytest --cov-fail-under=80` plus `scripts/check_layer_coverage.py` gates per layer in CI. |
+| §5 | MCP schema + round-trip tests | `tests/mcp/test_mcp_schema_round_trip.py`. |
+| §6 | OpenTelemetry tracing | `TracerPort` (domain) + `NoopTracer`/OTel adapter (infrastructure); contextvar propagation across `await`. |
+| §6 | RED metrics per endpoint and MCP tool | `ObservabilityMiddleware` + `InMemoryMetrics` adapter (Prometheus exporter pluggable). |
+| §6 | Structured JSON logs with correlation IDs, zero PII | `configure_logging()` in `prism.shared.infrastructure.observability`; correlation IDs via contextvar — ADR [0005](docs/decisions/0005-correlation-ids.md). |
+| §6 | Per-AI-call log (model id, version, prompt hash, tokens, latency, cost) | `AICallLog` + `LoggingAICallRecorder` writing to `prism.aicall`; prompts are SHA-256 hashed, never stored raw. |
+| §7 | Anti-patterns rejected | Aggregates have real behaviour (`Product.enrich`, `Payment.capture`, `Conversation.append_message`); CI contracts above mechanically reject violations. |
+
+ADR index lives in [`docs/decisions/`](docs/decisions/). New deviations
+require a one-paragraph ADR before merge.
+
+---
+
 *PRISM — Unified Commerce Intelligence Platform | Searce / Planet Payment | Confidential*
